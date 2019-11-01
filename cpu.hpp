@@ -16,7 +16,7 @@ class CPU{
         void setup();
         void reset();
         void next();
-        void AddressMapper();
+        void AddressMap();
 }
 
 
