@@ -17,7 +17,7 @@ void reset(){
     for(int i = 0; i<r.size(); i++){
         r[i] = 0;
     }
-    PC = 0;
+    PC = 0x10000000;
 }
 void next(){
 //increment PC, read/start next instruction
