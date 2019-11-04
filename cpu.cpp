@@ -27,29 +27,45 @@ void next(){
         switch (instruction.funct) {
           //ADD
           case 0x20{
-          std::cout << "ADD" << '\n';
-          break;
+            if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 0)){
+              r[instruction.rd] = ~r[instruction.rs] + 1 + r[instruction.rs];
+            }
+            else if(((r[instruction.rs] >> 31) == 0) && ((r[instruction.rs] >> 31) == 1)){
+              r[instruction.rd] = r[instruction.rs] + ~r[instruction.rs] + 1;
+            }
+            else if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 1)){
+              r[instruction.rd] = ~r[instruction.rs] + ~r[instruction.rs] + 2;
+            }
+            else{
+              r[instruction.rd] = r[instruction.rs] + r[instruction.rt];
+            }
+            break;
           }
           //ADDU
           case 0x21{
-            std::cout << "ADDU" << '\n';
             r[instruction.rd] = r[instruction.rs] + r[instruction.rt];
             break;
           }
           //AND
           case 0x24{
-            std::cout << "AND" << '\n';
             r[instruction.rd] = r[instruction.rs] && r[instruction.rt];
             break;
           }
           //DIV
           case 0x1A{
             std::cout << "DIV" << '\n';
+            if(((r[instruction.rs] && 0x80000000) == 1) && ((r[instruction.rs] && 0x80000000) == 0)){
+                std::cout << "UNSIGNED OH NO";
+            }
+            else{
+                r[instruction.rd] = r[instruction.rs] / r[instruction.rt];
+            }
             break;
           }
           //DIVU
           case 0x1B{
             std::cout << "DIVU" << '\n';
+            r[instruction.rd] = r[instruction.rs] / r[instruction.rt];
             break;
           }
           //JR
