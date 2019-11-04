@@ -14,7 +14,6 @@ int main(int argc, char *argv[]){
   std::string binName = argv[1];
   std::cerr << binName; //Cerr for testing, cout actual result
   std::ifstream binStream(argv[1], std::ios::binary);
-  std::string str;
 
   // if(binStream){
   //   binStream.seekg(0, binStream.end);
@@ -29,21 +28,13 @@ int main(int argc, char *argv[]){
   // binStream.close();
 
   int count = 0;
-  while(count < 32){
+  while(count < 0x1000000|| count < sizeBin){
     char c;
     binStream.get(c);
-    str += c;
+    //character to uint_8
+    //store in rom
     count++;
   }
-
-  std::cout << '\n';
-  for(int i = 0; i < str.size(); i++){
-    std::cout << str[i];
-  }
-  std::cout << '\n';
-
-  unsigned long ul = std::stoul (str, nullptr, 2);
-  std::cout << ul << '\n';
 
   uint32_t x = ul;
 
