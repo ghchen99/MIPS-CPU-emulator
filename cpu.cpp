@@ -48,13 +48,13 @@ void next(){
           }
           //AND
           case 0x24{
-            r[instruction.rd] = r[instruction.rs] && r[instruction.rt];
+            r[instruction.rd] = r[instruction.rs] & r[instruction.rt];
             break;
           }
           //DIV
           case 0x1A{
             std::cout << "DIV" << '\n';
-            if(((r[instruction.rs] && 0x80000000) == 1) && ((r[instruction.rs] && 0x80000000) == 0)){
+            if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 0)){
                 std::cout << "UNSIGNED OH NO";
             }
             else{
@@ -105,17 +105,17 @@ void next(){
           }
           //NOR
           case 0x27{
-            std::cout << "NOR" << '\n';
+            r[instruction.rd] = ~(r[instruction.rs] | r[instruction.rt]);
             break;
           }
           //XOR
           case 0x26{
-            std::cout << "XOR" << '\n';
+            r[instruction.rd] = r[instruction.rs] ^ r[instruction.rt];
             break;
           }
           //OR
           case 0x25{
-            std::cout << "OR" << '\n';
+            r[instruction.rd] = r[instruction.rs] | r[instruction.rt];
             break;
           }
           //SLT
@@ -145,12 +145,23 @@ void next(){
           }
           //SUB
           case 0x22{
-            std::cout << "SUB" << '\n';
+            if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 0)){
+              r[instruction.rd] = ~r[instruction.rs] + 1 - r[instruction.rs];
+            }
+            else if(((r[instruction.rs] >> 31) == 0) && ((r[instruction.rs] >> 31) == 1)){
+              r[instruction.rd] = r[instruction.rs] - (~r[instruction.rs] + 1);
+            }
+            else if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 1)){
+              r[instruction.rd] = ~r[instruction.rs] - ~r[instruction.rs];
+            }
+            else{
+              r[instruction.rd] = r[instruction.rs] - r[instruction.rt];
+            }
             break;
           }
           //SUBU
           case 0x23{
-            std::cout << "SUBU" << '\n';
+            r[instruction.rd] = r[instruction.rs] - r[instruction.rt];
             break;
           }
         }
