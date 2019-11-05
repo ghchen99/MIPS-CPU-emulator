@@ -1,7 +1,7 @@
 #ifndef H_INSTR
 #define H_INSTR
 
-#include <instruction.cpp>
+#include <cstdint>
 
 struct instruction{
     int opcode;

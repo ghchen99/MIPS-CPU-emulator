@@ -1,4 +1,5 @@
-#include <instruction.hpp>
+#include "instruction.hpp"
+#include <cstdint>
 
 //default constructor
 
@@ -13,7 +14,7 @@ instruction::instruction(){
     this -> address = 0;
 }
 //constructor for instruction is decoder
-instruction :: instruction(uint32_t word){
+instruction::instruction(uint32_t word){
     this->opcode = (word >> 26);
     if(this->opcode == 0){
         this->rs = (word >> 21) & 0x1f;
