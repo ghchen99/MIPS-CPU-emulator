@@ -12,7 +12,7 @@ struct instruction{
     int funct;
     int imm;
     int address;
-    instruction(uint32_t word);
+    instruction(uint32_t word);    
 };
 
 #endif
