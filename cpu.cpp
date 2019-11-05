@@ -2,7 +2,7 @@
 #include <cpu.hpp>
 
 
-void run(){
+void CPU::run(){
 //call next until end or an exception is found
     try{
         for(int i = 0; /*i < bin.size(); i+= 32*/){
@@ -12,7 +12,7 @@ void run(){
     }
         
 }
-void reset(){
+void CPU::reset(){
 //set all registers to 0, set PC = 0x
     for(int i = 0; i<r.size(); i++){
         r[i] = 0;
@@ -21,7 +21,7 @@ void reset(){
 }
 
 //increment PC, compute current instruction, read next instruction
-void next(){
+void CPU::next(){
     //getting next instruction
     currentInstr = nextInstr;
     try{
@@ -286,7 +286,8 @@ void next(){
     }
     
 }
-uint32_t AddressMap(uint32_t const &location){
+
+uint32_t CPU::AddressMap(uint32_t const &location){
 //check validity of address for read/write, alter the offsets, and give exceptions
     if(0x10000000 < location < 0x11000000){
         return location - 0x10000000;
@@ -308,8 +309,20 @@ uint32_t AddressMap(uint32_t const &location){
     }
 }
 
-uint32_t loadInstruction(uint32_t const memLocation){
+uint32_t CPU::loadInstruction(uint32_t const memLocation){
     mappedLocation = AddressMap(memLocation);
     return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
+    
+}
+
+CPU::CPU(){
+    memoryFlags[0] = 0b001;
+    memoryFlags[1] = 0b101;
+    memoryFlags[2] = 0b110;
+    memoryFlags[3] = 0b100;
+    memoryFlags[4] = 0b010;
+    std::fill(ram.begin(), ram.end(), 0x00);
+    std::fill(rom.begin(), rom.end(), 0x00);
+    std::fill(reg.begin(), reg.end(), 0x00000000);
     
 }

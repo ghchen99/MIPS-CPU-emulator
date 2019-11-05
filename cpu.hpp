@@ -30,9 +30,10 @@ class instructionException : public std::exception{
 
 class CPU{
     private:
-        std::vector <uint8_t> rom(0x1000000);
-        std::vector <uint8_t> ram(0x4000000); 
+        std::vector <uint8_t> rom(0x1000000); //read only
+        std::vector <uint8_t> ram(0x4000000); //read or write no exectue
         std::vector <uint32_t> r(32);
+        std::vector <unsigned int> memoryFlags(5);
         uint32_t PC;
         uint32_t hi;
         uint32_t lo;
@@ -45,6 +46,7 @@ class CPU{
         void next();
         uint32_t AddressMap(uint32_t const &location) const;
         uint32_t loadInstruction(uint32_t const memLocation) const;
+        CPU();
 }
 
 
