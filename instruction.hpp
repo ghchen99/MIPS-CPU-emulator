@@ -12,6 +12,7 @@ struct instruction{
     int funct;
     int imm;
     int address;
+    instruction();
     instruction(uint32_t word);    
 };
 

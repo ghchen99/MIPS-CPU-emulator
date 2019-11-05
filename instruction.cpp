@@ -1,6 +1,17 @@
 #include <instruction.hpp>
 
+//default constructor
 
+instruction::instruction(){
+    this -> opcode = 0;
+    this -> rs = 0;
+    this -> rt = 0;
+    this -> rd = 0;
+    this -> shamt = 0;
+    this -> funct = 0;
+    this -> imm = 0;
+    this -> address = 0;
+}
 //constructor for instruction is decoder
 instruction :: instruction(uint32_t word){
     this->opcode = (word >> 26);
