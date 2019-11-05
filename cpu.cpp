@@ -14,9 +14,7 @@ void CPU::run(){
 }
 void CPU::reset(){
 //set all registers to 0, set PC = 0x
-    for(int i = 0; i<r.size(); i++){
-        r[i] = 0;
-    }
+    std::fill(reg.begin(), reg.end(), 0x00000000);
     PC = 0x10000000;
 }
 
@@ -323,6 +321,6 @@ CPU::CPU(){
     memoryFlags[4] = 0b010;
     std::fill(ram.begin(), ram.end(), 0x00);
     std::fill(rom.begin(), rom.end(), 0x00);
-    std::fill(reg.begin(), reg.end(), 0x00000000);
+    std::fill(r.begin(), r.end(), 0x00000000);
     
 }
