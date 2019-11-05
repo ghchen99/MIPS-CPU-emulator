@@ -13,7 +13,7 @@ class memoryException : public std::exception{
 };
 
 class arithmeticException : public std::exception{
-    arithmeticExceptionxception(const char *msg) : message(msg){}
+    arithmeticException(const char *msg) : message(msg){}
     const char *what() const{
         return this->message; 
     }
