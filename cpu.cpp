@@ -310,6 +310,6 @@ uint32_t AddressMap(uint32_t const &location){
 
 uint32_t loadInstruction(uint32_t const memLocation){
     mappedLocation = AddressMap(memLocation);
-    return rom[mappedLocation] || rom[mappedLocation + 1] || rom[mappedLocation + 2] || rom[mappedLocation + 3];
+    return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
     
 }
