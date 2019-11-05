@@ -34,12 +34,15 @@ class CPU{
         std::vector <uint8_t> ram(0x4000000); 
         std::vector <uint32_t> r(32);
         uint32_t PC;
+        instruction currentInstr;
+        instruction nextInstr;
         
     public:
         void setup();
         void reset();
         void next();
-        void AddressMap();
+        uint32_t AddressMap(uint32_t const &location) const;
+        uint32_t loadInstruction(uint32_t const memLocation) const;
 }
 
 

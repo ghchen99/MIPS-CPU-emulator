@@ -19,58 +19,75 @@ void reset(){
     }
     PC = 0x10000000;
 }
+
+//increment PC, compute current instruction, read next instruction
 void next(){
-//increment PC, read/start next instruction
-    switch (instruction.opcode) {
+    //getting next instruction
+    currentInstr = nextInstr;
+    try{
+        nextInstr = new instruction(loadInstruction(PC));
+    }
+    catch(memoryException){
+        //something
+    }
+    catch(instructionException){
+        //something
+    }
+    
+    PC += 4;
+    
+    //doing instruction
+        
+    switch (currentInstr.opcode) {
       //rType
       case 0x00:
-        switch (instruction.funct) {
+        switch (currentInstr.funct) {
           //ADD
           case 0x20{
-            if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 0)){
-              r[instruction.rd] = ~r[instruction.rs] + 1 + r[instruction.rs];
+            if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
+              r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rs];
             }
-            else if(((r[instruction.rs] >> 31) == 0) && ((r[instruction.rs] >> 31) == 1)){
-              r[instruction.rd] = r[instruction.rs] + ~r[instruction.rs] + 1;
+            else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
+              r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rs] + 1;
             }
-            else if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 1)){
-              r[instruction.rd] = ~r[instruction.rs] + ~r[instruction.rs] + 2;
+            else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
+              r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rs] + 2;
             }
             else{
-              r[instruction.rd] = r[instruction.rs] + r[instruction.rt];
+              r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
             }
             break;
           }
           //ADDU
           case 0x21{
-            r[instruction.rd] = r[instruction.rs] + r[instruction.rt];
+            r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
             break;
           }
           //AND
           case 0x24{
-            r[instruction.rd] = r[instruction.rs] & r[instruction.rt];
+            r[currentInstr.rd] = r[currentInstr.rs] & r[currentInstr.rt];
             break;
           }
           //DIV
           case 0x1A{
             std::cout << "DIV" << '\n';
-            if(instruction.rt == 0){
+            if(currentInstr.rt == 0){
                 throw arithmeticException("Tried to divide by 0");
-            if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 0)){
+            if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
                 std::cout << "UNSIGNED OH NO";
             }
             else{
-                r[instruction.rd] = r[instruction.rs] / r[instruction.rt];
+                r[currentInstr.rd] = r[currentInstr.rs] / r[currentInstr.rt];
             }
             break;
           }
           //DIVU
           case 0x1B{
             std::cout << "DIVU" << '\n';
-            if(instruction.rt == 0){
+            if(currentInstr.rt == 0){
                 throw arithmeticException("Tried to divide by 0");
             }
-            r[instruction.rd] = r[instruction.rs] / r[instruction.rt];
+            r[currentInstr.rd] = r[currentInstr.rs] / r[currentInstr.rt];
             break;
           }
           //JR
@@ -110,17 +127,17 @@ void next(){
           }
           //NOR
           case 0x27{
-            r[instruction.rd] = ~(r[instruction.rs] | r[instruction.rt]);
+            r[currentInstr.rd] = ~(r[currentInstr.rs] | r[currentInstr.rt]);
             break;
           }
           //XOR
           case 0x26{
-            r[instruction.rd] = r[instruction.rs] ^ r[instruction.rt];
+            r[currentInstr.rd] = r[currentInstr.rs] ^ r[currentInstr.rt];
             break;
           }
           //OR
           case 0x25{
-            r[instruction.rd] = r[instruction.rs] | r[instruction.rt];
+            r[currentInstr.rd] = r[currentInstr.rs] | r[currentInstr.rt];
             break;
           }
           //SLT
@@ -150,23 +167,23 @@ void next(){
           }
           //SUB
           case 0x22{
-            if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 0)){
-              r[instruction.rd] = ~r[instruction.rs] + 1 - r[instruction.rs];
+            if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
+              r[currentInstr.rd] = ~r[currentInstr.rs] + 1 - r[currentInstr.rs];
             }
-            else if(((r[instruction.rs] >> 31) == 0) && ((r[instruction.rs] >> 31) == 1)){
-              r[instruction.rd] = r[instruction.rs] - (~r[instruction.rs] + 1);
+            else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
+              r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rs] + 1);
             }
-            else if(((r[instruction.rs] >> 31) == 1) && ((r[instruction.rs] >> 31) == 1)){
-              r[instruction.rd] = ~r[instruction.rs] - ~r[instruction.rs];
+            else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
+              r[currentInstr.rd] = ~r[currentInstr.rs] - ~r[currentInstr.rs];
             }
             else{
-              r[instruction.rd] = r[instruction.rs] - r[instruction.rt];
+              r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
             }
             break;
           }
           //SUBU
           case 0x23{
-            r[instruction.rd] = r[instruction.rs] - r[instruction.rt];
+            r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
             break;
           }
         }
@@ -267,17 +284,15 @@ void next(){
         // Missing BGEZ, BGEZAL, BLEZAL, JALR, LH, LWL, LWR
         // SLLV, SRAV, XORI
     }
-
-    PC += 4;
     
 }
-void AddressMap(){
+uint32_t AddressMap(uint32_t const &location){
 //check validity of address for read/write, alter the offsets, and give exceptions
     if(0x10000000 < location < 0x11000000){
-        location -= 0x10000000;
+        return location - 0x10000000;
     }
     if(0x20000000 < location < 0x24000000){
-        location -= 0x2000000;
+        return location - 0x2000000;
     }
     if(0x3000000 < location < 0x3000004){
 //do something
@@ -291,4 +306,10 @@ void AddressMap(){
     else{
         throw memoryException("Tried to access invalid memory address");
     }
+}
+
+uint32_t loadInstruction(uint32_t const memLocation){
+    mappedLocation = AddressMap(memLocation);
+    return rom[mappedLocation] || rom[mappedLocation + 1] || rom[mappedLocation + 2] || rom[mappedLocation + 3];
+    
 }
