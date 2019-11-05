@@ -1,7 +1,7 @@
 #include <instruction.hpp>
 
 
-#constructor for instruction is decoder
+//constructor for instruction is decoder
 instruction :: instruction(uint32_t word){
     this->opcode = (word >> 26);
     if(this->opcode == 0){

@@ -14,8 +14,5 @@ struct instruction{
     int address;
     instruction(uint32_t word);
 };
-    
-//MISSING:
-//BGEZ, BGEZAL, BLEZAL, JALR, LH, LWL, LWR, SLLV, SRAV, XORI,
 
 #endif
