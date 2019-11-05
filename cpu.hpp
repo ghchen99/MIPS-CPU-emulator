@@ -34,6 +34,8 @@ class CPU{
         std::vector <uint8_t> ram(0x4000000); 
         std::vector <uint32_t> r(32);
         uint32_t PC;
+        uint32_t hi;
+        uint32_t lo;
         instruction currentInstr;
         instruction nextInstr;
         
