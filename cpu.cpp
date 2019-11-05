@@ -1,20 +1,35 @@
 #include <string>
-#include <cpu.hpp>
+#include <cstdint>
+#include <vector>
 
+#include "cpu.hpp"
+#include "instruction.hpp"
+
+CPU::CPU(){
+    memoryFlags[0] = 0b001;
+    memoryFlags[1] = 0b101;
+    memoryFlags[2] = 0b110;
+    memoryFlags[3] = 0b100;
+    memoryFlags[4] = 0b010;
+    std::fill(ram.begin(), ram.end(), 0x00);
+    std::fill(rom.begin(), rom.end(), 0x00);
+    std::fill(r.begin(), r.end(), 0x00000000);
+}
 
 void CPU::run(){
 //call next until end or an exception is found
     try{
-        for(int i = 0; /*i < bin.size(); i+= 32*/){
+        for(int i = 0; i < /*bin.size()*/ 0x1000000; i+= 32){
+            this->next();
         }
     }
-    catch(){
+    catch(endException&){
     }
         
 }
 void CPU::reset(){
 //set all registers to 0, set PC = 0x
-    std::fill(reg.begin(), reg.end(), 0x00000000);
+    std::fill(r.begin(), r.end(), 0x00000000);
     PC = 0x10000000;
 }
 
@@ -23,7 +38,7 @@ void CPU::next(){
     //getting next instruction
     currentInstr = nextInstr;
     try{
-        nextInstr = new instruction(loadInstruction(PC));
+        instruction nextInstr(loadInstruction(PC));
     }
     catch(memoryException){
         //something
@@ -285,7 +300,7 @@ void CPU::next(){
     
 }
 
-uint32_t CPU::AddressMap(uint32_t const &location){
+uint32_t CPU::AddressMap(uint32_t location){
 //check validity of address for read/write, alter the offsets, and give exceptions
     if(0x10000000 < location < 0x11000000){
         return location - 0x10000000;
@@ -307,20 +322,8 @@ uint32_t CPU::AddressMap(uint32_t const &location){
     }
 }
 
-uint32_t CPU::loadInstruction(uint32_t const memLocation){
-    mappedLocation = AddressMap(memLocation);
+uint32_t CPU::loadInstruction(uint32_t memLocation){
+    mappedLocation = addressMap(memLocation);
     return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
-    
-}
-
-CPU::CPU(){
-    memoryFlags[0] = 0b001;
-    memoryFlags[1] = 0b101;
-    memoryFlags[2] = 0b110;
-    memoryFlags[3] = 0b100;
-    memoryFlags[4] = 0b010;
-    std::fill(ram.begin(), ram.end(), 0x00);
-    std::fill(rom.begin(), rom.end(), 0x00);
-    std::fill(r.begin(), r.end(), 0x00000000);
     
 }
