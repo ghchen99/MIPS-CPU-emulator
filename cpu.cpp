@@ -45,11 +45,17 @@ void next(){
           //DIV
           case 0x1A{
             std::cout << "DIV" << '\n';
+            if(instruction.rt == 0){
+                throw arithmeticException("Tried to divide by 0");
+            }
             break;
           }
           //DIVU
           case 0x1B{
             std::cout << "DIVU" << '\n';
+            if(instruction.rt == 0){
+                throw arithmeticException("Tried to divide by 0");
+            }
             break;
           }
           //JR
@@ -257,6 +263,6 @@ void AddressMap(){
 //do something
     }
     else{
-        throw MemoryException
+        throw memoryException("Tried to access invalid memory address");
     }
 }

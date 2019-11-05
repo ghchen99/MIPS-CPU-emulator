@@ -4,6 +4,29 @@
 #include <string>
 #include <cpu.cpp>
 
+class memoryException : public std::exception{
+    memoryException(const char *msg) : message(msg) {}
+    const char *what() const{ 
+        return this->message; 
+    }
+    const char *msg;
+};
+
+class arithmeticException : public std::exception{
+    arithmeticExceptionxception(const char *msg) : message(msg){}
+    const char *what() const{
+        return this->message; 
+    }
+    const char *msg;
+};
+class instructionException : public std::exception{
+    instructionException(const char *msg) : message(msg){}
+    const char *what() const{ 
+        return this->message; 
+    }
+    const char *msg;
+};
+
 
 class CPU{
     private:
