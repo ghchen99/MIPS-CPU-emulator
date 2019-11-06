@@ -83,59 +83,58 @@ void CPU::next(){
           }
           //DIV
           case 0x1A{
-            std::cout << "DIV" << '\n';
             if(currentInstr.rt == 0){
                 throw arithmeticException("Tried to divide by 0");
-            if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
-                std::cout << "UNSIGNED OH NO";
-            }
-            else{
-                r[currentInstr.rd] = r[currentInstr.rs] / r[currentInstr.rt];
-            }
+            hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInsstr.rt]);
+            lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInsstr.rt]);
             break;
           }
           //DIVU
           case 0x1B{
-            std::cout << "DIVU" << '\n';
             if(currentInstr.rt == 0){
                 throw arithmeticException("Tried to divide by 0");
             }
-            r[currentInstr.rd] = r[currentInstr.rs] / r[currentInstr.rt];
+            hi = sr[currentInstr.rs] % sr[currentInsstr.rt];
+            lo = sr[currentInstr.rs] / sr[currentInsstr.rt];
             break;
           }
           //JR
           case 0x08{
-            std::cout << "JR" << '\n';
+            pc = r[currentInstr.rs];
             break;
           }
           //MFHI
           case 0x10{
-            std::cout << "MFHI" << '\n';
+            r[currentInstr.rd] = hi;
             break;
           }
           //MTHI
           case 0x11{
-            std::cout << "MTHI" << '\n';
+            hi = r[currentInstr.rs];
             break;
           }
           //MFLO
           case 0x12{
-            std::cout << "MFLO" << '\n';
+            r[currentInstr.rd] = lo;
             break;
           }
           //MTLO
           case 0x13{
-            std::cout << "MTLO" << '\n';
+            lo = r[currentInstr.rs];
             break;
           }
           //MULT
           case 0x18{
-            std::cout << "MULT" << '\n';
+            uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
+            hi = static_cast<uint64_t>prod >> 32;
+            lo = static_cast<uint64_t>prod & 0xffffffff;
             break;
           }
           //MULTU
           case 0x19{
-            std::cout << "MULTU" << '\n';
+            uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
+            hi = prod >> 32;
+            lo = prod & 0xffffffff;
             break;
           }
           //NOR
@@ -155,27 +154,27 @@ void CPU::next(){
           }
           //SLT
           case 0x2A{
-            std::cout << "SLT" << '\n';
+            r[currentInstr.rd] = sr[currentInstr.rs] < sr[currentInstr.rt];
             break;
           }
           //SLTU
           case 0x2B{
-            std::cout << "SLTU" << '\n';
+            r[currentInstr.rd] = r[currentInstr.rs] < sr[currentInstr.rt];
             break;
           }
           //SLL
           case 0x00{
-            std::cout << "SLL" << '\n';
+            r[currentInstr.rd] = r[currentInstr.rt] << currentInstr.shamt;
             break;
           }
           //SRL
           case 0x02{
-            std::cout << "SRL" << '\n';
+            r[currentInstr.rd] = r[currentInstr.rt] >> currentInstr.shamt;
             break;
           }
           //SRA
           case 0x03{
-            std::cout << "SRA" << '\n';
+            sr[currentInstr.rd] = sr[currentInstr.rt] >> currentInstr.shamt;
             break;
           }
           //SUB
