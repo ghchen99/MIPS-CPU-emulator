@@ -1,6 +1,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <iostream>
 
 #include "cpu.hpp"
 #include "instruction.hpp"
@@ -52,254 +53,355 @@ void CPU::next(){
     //doing instruction
         
     switch (currentInstr.opcode) {
+
       //rType
-      case 0x00:
-        switch (currentInstr.funct) {
-          //ADD
-          case 0x20{
-            if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
-              r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rs];
+    case 0x00:
+        {
+            switch (currentInstr.funct) {
+                
+            //ADD
+                case 0x20:
+                {
+                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
+                    r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rs];
+                    }
+                    else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
+                    r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rs] + 1;
+                    }
+                    else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
+                    r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rs] + 2;
+                    }
+                    else{
+                    r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
+                    }
+                    break;
+                }
+            
+            //ADDU
+                case 0x21:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
+                    break;
+                }
+
+            //AND
+                case 0x24:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rs] & r[currentInstr.rt];
+                    break;
+                }
+
+            //DIV
+                case 0x1A:
+                {
+                    if(currentInstr.rt == 0){
+                        throw arithmeticException("Tried to divide by 0");
+                    }
+                    hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInstr.rt]);
+                    lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInstr.rt]);
+                break;
+                }
+
+            //DIVU
+                case 0x1B:
+                {
+                    if(currentInstr.rt == 0){
+                        throw arithmeticException("Tried to divide by 0");
+                    }
+                    hi = sr[currentInstr.rs] % sr[currentInstr.rt];
+                    lo = sr[currentInstr.rs] / sr[currentInstr.rt];
+                    break;
+                }
+
+            //JR
+                case 0x08:
+                {
+                    PC = r[currentInstr.rs];
+                    break;
+                }
+
+            //MFHI
+                case 0x10:
+                {
+                    r[currentInstr.rd] = hi;
+                    break;
+                }
+
+            //MTHI
+                case 0x11:
+                {
+                    hi = r[currentInstr.rs];
+                    break;
+                }
+                
+            //MFLO
+                case 0x12:
+                {
+                    r[currentInstr.rd] = lo;
+                    break;
+                }
+
+            //MTLO
+                case 0x13:
+                {
+                    lo = r[currentInstr.rs];
+                    break;
+                }
+
+            //MULT
+                case 0x18:
+                {
+                    uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
+                    hi = static_cast<uint64_t> (prod >> 32);
+                    lo = static_cast<uint64_t> (prod & 0xffffffff);
+                    break;
+                }
+
+            //MULTU
+                case 0x19:
+                {
+                    uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
+                    hi = prod >> 32;
+                    lo = prod & 0xffffffff;
+                    break;
+                }
+            
+            //NOR
+                case 0x27:
+                {
+                    r[currentInstr.rd] = ~(r[currentInstr.rs] | r[currentInstr.rt]);
+                    break;
+                }
+                
+            //XOR
+                case 0x26:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rs] ^ r[currentInstr.rt];
+                    break;
+                }
+            
+            //OR
+                case 0x25:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rs] | r[currentInstr.rt];
+                    break;
+                }
+            
+            //SLT
+                case 0x2A:
+                {
+                    r[currentInstr.rd] = sr[currentInstr.rs] < sr[currentInstr.rt];
+                    break;
+                }
+            
+            //SLTU
+                case 0x2B:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rs] < sr[currentInstr.rt];
+                    break;
+                }
+            
+            //SLL
+                case 0x00:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rt] << currentInstr.shamt;
+                    break;
+                }
+            
+            //SRL
+                case 0x02:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rt] >> currentInstr.shamt;
+                    break;
+                }
+            
+            //SRA
+                case 0x03:
+                {
+                    sr[currentInstr.rd] = sr[currentInstr.rt] >> currentInstr.shamt;
+                    break;
+                }
+            
+            //SUB
+                case 0x22:
+                {
+                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
+                    r[currentInstr.rd] = ~r[currentInstr.rs] + 1 - r[currentInstr.rs];
+                    }
+                    else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
+                    r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rs] + 1);
+                    }
+                    else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
+                    r[currentInstr.rd] = ~r[currentInstr.rs] - ~r[currentInstr.rs];
+                    }
+                    else{
+                    r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
+                    }
+                    break;
+                }
+            
+                //SUBU
+                case 0x23:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
+                    break;
+                }
             }
-            else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
-              r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rs] + 1;
-            }
-            else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
-              r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rs] + 2;
-            }
-            else{
-              r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
-            }
-            break;
-          }
-          //ADDU
-          case 0x21{
-            r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
-            break;
-          }
-          //AND
-          case 0x24{
-            r[currentInstr.rd] = r[currentInstr.rs] & r[currentInstr.rt];
-            break;
-          }
-          //DIV
-          case 0x1A{
-            if(currentInstr.rt == 0){
-                throw arithmeticException("Tried to divide by 0");
-            hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInsstr.rt]);
-            lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInsstr.rt]);
-            break;
-          }
-          //DIVU
-          case 0x1B{
-            if(currentInstr.rt == 0){
-                throw arithmeticException("Tried to divide by 0");
-            }
-            hi = sr[currentInstr.rs] % sr[currentInsstr.rt];
-            lo = sr[currentInstr.rs] / sr[currentInsstr.rt];
-            break;
-          }
-          //JR
-          case 0x08{
-            pc = r[currentInstr.rs];
-            break;
-          }
-          //MFHI
-          case 0x10{
-            r[currentInstr.rd] = hi;
-            break;
-          }
-          //MTHI
-          case 0x11{
-            hi = r[currentInstr.rs];
-            break;
-          }
-          //MFLO
-          case 0x12{
-            r[currentInstr.rd] = lo;
-            break;
-          }
-          //MTLO
-          case 0x13{
-            lo = r[currentInstr.rs];
-            break;
-          }
-          //MULT
-          case 0x18{
-            uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
-            hi = static_cast<uint64_t>prod >> 32;
-            lo = static_cast<uint64_t>prod & 0xffffffff;
-            break;
-          }
-          //MULTU
-          case 0x19{
-            uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
-            hi = prod >> 32;
-            lo = prod & 0xffffffff;
-            break;
-          }
-          //NOR
-          case 0x27{
-            r[currentInstr.rd] = ~(r[currentInstr.rs] | r[currentInstr.rt]);
-            break;
-          }
-          //XOR
-          case 0x26{
-            r[currentInstr.rd] = r[currentInstr.rs] ^ r[currentInstr.rt];
-            break;
-          }
-          //OR
-          case 0x25{
-            r[currentInstr.rd] = r[currentInstr.rs] | r[currentInstr.rt];
-            break;
-          }
-          //SLT
-          case 0x2A{
-            r[currentInstr.rd] = sr[currentInstr.rs] < sr[currentInstr.rt];
-            break;
-          }
-          //SLTU
-          case 0x2B{
-            r[currentInstr.rd] = r[currentInstr.rs] < sr[currentInstr.rt];
-            break;
-          }
-          //SLL
-          case 0x00{
-            r[currentInstr.rd] = r[currentInstr.rt] << currentInstr.shamt;
-            break;
-          }
-          //SRL
-          case 0x02{
-            r[currentInstr.rd] = r[currentInstr.rt] >> currentInstr.shamt;
-            break;
-          }
-          //SRA
-          case 0x03{
-            sr[currentInstr.rd] = sr[currentInstr.rt] >> currentInstr.shamt;
-            break;
-          }
-          //SUB
-          case 0x22{
-            if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
-              r[currentInstr.rd] = ~r[currentInstr.rs] + 1 - r[currentInstr.rs];
-            }
-            else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
-              r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rs] + 1);
-            }
-            else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
-              r[currentInstr.rd] = ~r[currentInstr.rs] - ~r[currentInstr.rs];
-            }
-            else{
-              r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
-            }
-            break;
-          }
-          //SUBU
-          case 0x23{
-            r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
-            break;
-          }
         }
-        //MFC0
-        case 0x10{
-          std::cout << "MFC0" << '\n';
-          break;
-        }
-        //SLTI
-        case 0x0A{
-          std::cout << "SLTI" << '\n';
-          break;
-        }
-        //SLITU
-        case 0x0B{
-          std::cout << "SLITU" << '\n';
-          break;
-        }
-        //ANDI
-        case 0x0C{
-          std::cout << "ANDI" << '\n';
-          break;
-        }
-        //ORI
-        case 0x0D{
-          std::cout << "ORI" << '\n';
-          break;
-        }
-        //LUI
-        case 0x0F{
-          std::cout << "LUI" << '\n';
-          break;
-        }
-        //SW
-        case 0x2B{
-          std::cout << "SW" << '\n';
-          break;
-        }
-        //BEQ
-        case 0x04{
-          std::cout << "BEQ" << '\n';
-          break;
-        }
-        //BNE
-        case 0x05{
-          std::cout << "BNE" << '\n';
-          break;
-        }
-        //BLEZ
-        case 0x06{
-          std::cout << "BLEZ" << '\n';
-          break;
-        }
-        //BGTZ
-        case 0x07{
-          std::cout << "BGTZ" << '\n';
-        }
-        //ADDI
-        case 0x08{
-
-        }
-        //ADDIU
-        case 0x09{
-
-        }
-        //LB
-        case 0x20{
-
-        }
-        //LW
-        case 0x23{
-
-        }
-        //LBU
-        case 0x24{
-
-        }
-        //LHU
-        case 0x25{
-
-        }
-        //SB
-        case 0x28{
-
-        }
-        //SH
-        case 0x29{
-
-        }
-        //J
-        case 0x02{
-
-        }
-        //JAL
-        case 0x03{
-
-        }
-        // Missing BGEZ, BGEZAL, BLEZAL, JALR, LH, LWL, LWR
-        // SLLV, SRAV, XORI
+    //MFC0
+    case 0x10:
+    {
+        std::cout << "MFC0" << '\n';
+        break;
     }
     
+    //SLTI
+    case 0x0A:
+    {
+        std::cout << "SLTI" << '\n';
+        break;
+    }
+    
+    //SLITU
+    case 0x0B:
+    {
+        std::cout << "SLITU" << '\n';
+        break;
+    }
+    
+    //ANDI
+    case 0x0C:
+    {
+        std::cout << "ANDI" << '\n';
+        break;
+    }
+    
+    //ORI
+    case 0x0D:
+    {
+        std::cout << "ORI" << '\n';
+        break;
+    }
+    
+    //LUI
+    case 0x0F:
+    {
+        std::cout << "LUI" << '\n';
+        break;
+    }
+    
+    //SW
+    case 0x2B:
+    {
+        std::cout << "SW" << '\n';
+        break;
+    }
+    
+    //BEQ
+    case 0x04:
+    {
+        std::cout << "BEQ" << '\n';
+        break;
+    }
+    
+    //BNE
+    case 0x05:
+    {
+        std::cout << "BNE" << '\n';
+        break;
+    }
+    
+    //BLEZ
+    case 0x06:
+    {
+        std::cout << "BLEZ" << '\n';
+        break;
+    }
+    
+    //BGTZ
+    case 0x07:
+    {
+        std::cout << "BGTZ" << '\n';
+        break;
+    }
+    
+    //ADDI
+    case 0x08:
+    {
+        
+    }
+
+    
+    //ADDIU
+    case 0x09:
+    {
+        
+    }
+
+    
+    //LB
+    case 0x20:
+    {
+        
+    }
+
+    
+    //LW
+    case 0x23:
+    {
+        
+    }
+
+    
+    //LBU
+    case 0x24:
+    {
+        
+    }
+
+    
+    //LHU
+    case 0x25:
+    {
+        
+    }
+
+    
+    //SB
+    case 0x28:
+    {
+        
+    }
+
+    
+    //SH
+    case 0x29:
+    {
+        
+    }
+
+    
+    //J
+    case 0x02:
+    {
+        
+    }
+
+    
+    //JAL
+    case 0x03:
+    {
+        
+    }
+
+        
+        // Missing BGEZ, BGEZAL, BLEZAL, JALR, LH, LWL, LWR
+        // SLLV, SRAV, XORI
+    
+    }
 }
 
-uint32_t CPU::AddressMap(uint32_t location){
+uint32_t CPU::addressMap(uint32_t location){
 //check validity of address for read/write, alter the offsets, and give exceptions
     if(0x10000000 < location < 0x11000000){
         return location - 0x10000000;
@@ -322,7 +424,7 @@ uint32_t CPU::AddressMap(uint32_t location){
 }
 
 uint32_t CPU::loadInstruction(uint32_t memLocation){
-    mappedLocation = addressMap(memLocation);
+    uint32_t mappedLocation = addressMap(memLocation);
     return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
     
 }

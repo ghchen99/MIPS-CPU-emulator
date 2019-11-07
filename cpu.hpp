@@ -7,7 +7,7 @@
 
 #include "instruction.hpp"
 
-class memoryException : public std::exception{
+struct memoryException : public std::exception{
     memoryException(const char *msg) : message(msg) {}
     const char *what() const noexcept{ 
         return this->message; 
@@ -15,7 +15,7 @@ class memoryException : public std::exception{
     const char *message;
 };
 
-class arithmeticException : public std::exception{
+struct arithmeticException : public std::exception{
     arithmeticException(const char *msg) : message(msg){}
     const char *what() const noexcept{
         return this->message; 
@@ -23,7 +23,7 @@ class arithmeticException : public std::exception{
     const char *message;
 };
 
-class instructionException : public std::exception{
+struct instructionException : public std::exception{
     instructionException(const char *msg) : message(msg){}
     const char *what() const noexcept{ 
         return this->message; 
@@ -31,13 +31,7 @@ class instructionException : public std::exception{
     const char *message;
 };
 
-class endException : public std::exception{
-    endException(const char *msg) : message(msg){}
-    const char *what() const noexcept{ 
-        return this->message; 
-    }
-    const char *message;
-};
+class endException : public std::exception {};
 
 class CPU{
     private:

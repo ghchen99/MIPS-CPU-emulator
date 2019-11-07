@@ -13,7 +13,7 @@ struct instruction{
     int imm;
     int address;
     instruction();
-    instruction(uint32_t word);    
+    instruction(uint32_t encodedInstruction);    
 };
 
 #endif
