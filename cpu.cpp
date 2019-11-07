@@ -7,11 +7,11 @@
 #include "instruction.hpp"
 
 CPU::CPU(){
-    memoryFlags[0] = 0b001;
-    memoryFlags[1] = 0b101;
-    memoryFlags[2] = 0b110;
-    memoryFlags[3] = 0b100;
-    memoryFlags[4] = 0b010;
+    memoryFlags[0] = 0b001; //ADDR_NULL - execute
+    memoryFlags[1] = 0b101; //ADDR_INSTR - read, execute
+    memoryFlags[2] = 0b110; //ADDR_DATA - read, write
+    memoryFlags[3] = 0b100; //ADDR_GETC - read
+    memoryFlags[4] = 0b010; //ADDR_PUTC - write
     std::fill(ram.begin(), ram.end(), 0x00);
     std::fill(rom.begin(), rom.end(), 0x00);
     std::fill(r.begin(), r.end(), 0x00000000);
@@ -151,18 +151,18 @@ void CPU::next(){
             //MULT
                 case 0x18:
                 {
-                    uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
-                    hi = static_cast<uint64_t> (prod >> 32);
-                    lo = static_cast<uint64_t> (prod & 0xffffffff);
+                    uint64_t product = r[currentInstr.rs] * r[currentInstr.rt];
+                    hi = static_cast<uint64_t> (product >> 32);
+                    lo = static_cast<uint64_t> (product & 0xffffffff);
                     break;
                 }
 
             //MULTU
                 case 0x19:
                 {
-                    uint64_t prod = r[currentInstr.rs] * r[currentInstr.rt];
-                    hi = prod >> 32;
-                    lo = prod & 0xffffffff;
+                    uint64_t product = r[currentInstr.rs] * r[currentInstr.rt];
+                    hi = product >> 32;
+                    lo = product & 0xffffffff;
                     break;
                 }
             
@@ -403,19 +403,34 @@ void CPU::next(){
 
 uint32_t CPU::addressMap(uint32_t location){
 //check validity of address for read/write, alter the offsets, and give exceptions
+    if(0x0000000 < location < 0x4){
+        if(instructionFlag && memoryFlags[0] == 0b000){
+            throw memoryException("Tried to read/write/execute illegally");
+        }
+//do something
+    }
     if(0x10000000 < location < 0x11000000){
+        if(instructionFlag && memoryFlags[1] == 0b000){
+            throw memoryException("Tried to read/write/execute illegally");
+        }
         return location - 0x10000000;
     }
     if(0x20000000 < location < 0x24000000){
-        return location - 0x2000000;
+        if(instructionFlag && memoryFlags[2] == 0b000){
+            throw memoryException("Tried to read/write/execute illegally");
+        }
+        return location - 0x20000000;
     }
     if(0x3000000 < location < 0x3000004){
+        if(instructionFlag && memoryFlags[3] == 0b000){
+            throw memoryException("Tried to read/write/execute illegally");
+        }
 //do something
     }
     if(0x3000004 < location < 0x3000008){
-//do something
-    }
-    if(0x0000000 < location < 0x4){
+        if(instructionFlag && memoryFlags[4] == 0b000){
+            throw memoryException("Tried to read/write/execute illegally");
+        }
 //do something
     }
     else{
@@ -424,6 +439,7 @@ uint32_t CPU::addressMap(uint32_t location){
 }
 
 uint32_t CPU::loadInstruction(uint32_t memLocation){
+    instructionFlag = 0b100;
     uint32_t mappedLocation = addressMap(memLocation);
     return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
     

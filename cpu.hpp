@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <exception>
 
 #include "instruction.hpp"
 
@@ -39,6 +40,7 @@ class CPU{
         std::vector <uint8_t> ram = std::vector <uint8_t> (0x4000000); //read or write no exectue
         std::vector <uint32_t> r = std::vector <uint32_t> (32);
         std::vector <unsigned int> memoryFlags = std::vector <unsigned int>(5);
+        unsigned int instructionFlag;
         uint32_t PC;
         uint32_t hi;
         uint32_t lo;
