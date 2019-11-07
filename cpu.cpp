@@ -50,9 +50,14 @@ void CPU::next(){
     
     PC += 4;
     
-    //doing instruction
+    //do delayed instruction
+    switch(delayInstr.opcode){
+        //do instructions LB, LH, LW, LBU, LHU here (delayed instructions) and then clear delayInstr
+    }
+    
+    //doing instruction; for load instructions set delayInstr = currentInstr and do no operation
         
-    switch (currentInstr.opcode) {
+    switch(currentInstr.opcode) {
 
       //rType
     case 0x00:
@@ -399,6 +404,8 @@ void CPU::next(){
         // SLLV, SRAV, XORI
     
     }
+
+    r[0] = 0;
 }
 
 uint32_t CPU::addressMap(uint32_t location){

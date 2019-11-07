@@ -46,6 +46,7 @@ class CPU{
         uint32_t lo;
         instruction currentInstr;
         instruction nextInstr;
+        instruction delayInstr;
         
     public:
         CPU();
