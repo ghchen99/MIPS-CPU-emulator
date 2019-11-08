@@ -112,8 +112,8 @@ void CPU::next(){
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    //hi = sr[currentInstr.rs] % sr[currentInstr.rt];
-                    //lo = sr[currentInstr.rs] / sr[currentInstr.rt];
+                    hi = r[currentInstr.rs] % r[currentInstr.rt];
+                    lo = r[currentInstr.rs] / r[currentInstr.rt];
                     break;
                 }
 
