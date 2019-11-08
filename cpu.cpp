@@ -53,13 +53,8 @@ void CPU::next(){
     }
     
     PC += 4;
-    
-    //do delayed instruction
-    switch(delayInstr.opcode){
-        //do instructions LB, LH, LW, LBU, LHU here (delayed instructions) and then clear delayInstr
-    }
-    
-    //doing instruction; for load instructions set delayInstr = currentInstr and do no operation
+        
+    //doing instruction; for load instructions do no operation
         
     switch(currentInstr.opcode) {
 
@@ -409,7 +404,31 @@ void CPU::next(){
     
     }
 
+    
+    //do delayed instruction
+    switch(delayInstr.opcode){
+        //do instructions LB, LH, LW, LBU, LHU here (delayed instructions) and then clear delayInstr
+    }
+    
+    
     r[0] = 0;
+    
+    //load next delay operation
+    switch(currentInstr.opcode){
+        //set instructions LB, LH, LW, LBU, LHU to delayInstr here (delayed instructions)
+        //LB
+        case 0x20:
+        //LW
+        case 0x23:
+        //LBU
+        case 0x24:
+        //LHU
+        case 0x25:
+        delayInstr = currentInstr;
+        default:
+            break;
+        
+    }
 }
 
 uint32_t CPU::addressMap(uint32_t location){
