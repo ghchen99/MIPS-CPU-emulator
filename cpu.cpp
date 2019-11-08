@@ -68,16 +68,16 @@ void CPU::next(){
                 case 0x20:
                 {
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
-                    r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rs];
+                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rs];
                     }
                     else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
-                    r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rs] + 1;
+                        r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rs] + 1;
                     }
                     else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
-                    r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rs] + 2;
+                        r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rs] + 2;
                     }
                     else{
-                    r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
+                        r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
                     }
                     break;
                 }
@@ -231,16 +231,16 @@ void CPU::next(){
                 case 0x22:
                 {
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
-                    r[currentInstr.rd] = ~r[currentInstr.rs] + 1 - r[currentInstr.rs];
+                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 - r[currentInstr.rs];
                     }
                     else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
-                    r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rs] + 1);
+                        r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rs] + 1);
                     }
                     else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
-                    r[currentInstr.rd] = ~r[currentInstr.rs] - ~r[currentInstr.rs];
+                        r[currentInstr.rd] = ~r[currentInstr.rs] - ~r[currentInstr.rs];
                     }
                     else{
-                    r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
+                        r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
                     }
                     break;
                 }
