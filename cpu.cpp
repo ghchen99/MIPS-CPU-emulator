@@ -248,7 +248,6 @@ void CPU::next(){
                             extend += pow(2, j);
                             j--;
                         }
-                        // sign extend
                     }
                     break;
                 }
@@ -331,28 +330,36 @@ void CPU::next(){
     //BEQ
     case 0x04:
     {
-        std::cout << "BEQ" << '\n';
+        if(r[currentInstr.rs] == r[currentInstr.rt]){
+            PC += (static_cast<int32_t>(currentInstr.imm) << 2) - 4;        
+        }
         break;
     }
     
     //BNE
     case 0x05:
     {
-        std::cout << "BNE" << '\n';
+        if(r[currentInstr.rs] != r[currentInstr.rt]){
+            PC += (static_cast<int32_t>(currentInstr.imm) << 2) - 4;        
+        }
         break;
     }
     
     //BLEZ
     case 0x06:
     {
-        std::cout << "BLEZ" << '\n';
+        if(r[currentInstr.rs] <= 0){
+            PC += (static_cast<int32_t>(currentInstr.imm) << 2) - 4;        
+        }
         break;
     }
     
     //BGTZ
     case 0x07:
     {
-        std::cout << "BGTZ" << '\n';
+        if(r[currentInstr.rs] > 0){
+            PC += (static_cast<int32_t>(currentInstr.imm) << 2) - 4;        
+        }
         break;
     }
     
@@ -366,7 +373,8 @@ void CPU::next(){
     //ADDIU
     case 0x09:
     {
-        
+        r[currentInstr.rt] = r[currentInstr.rs] + currentInstr.imm;
+        break;
     }
 
     
@@ -415,14 +423,15 @@ void CPU::next(){
     //J
     case 0x02:
     {
-        
+        PC = (PC & 0xf0000000) | (currentInstr.addr << 2);
     }
 
     
     //JAL
     case 0x03:
     {
-        
+        r[31] = PC;
+        break;
     }
 
         
