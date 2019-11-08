@@ -418,8 +418,10 @@ void CPU::next(){
         //set instructions LB, LH, LW, LBU, LHU to delayInstr here (delayed instructions)
         //LB
         case 0x20:
+        //LH
+        case 0x21:
         //LW
-        case 0x23:
+        case 0x22:
         //LBU
         case 0x24:
         //LHU
