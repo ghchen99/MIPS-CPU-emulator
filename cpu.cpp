@@ -66,8 +66,8 @@ void CPU::next(){
             //ADD
                 case 0x20:
                 {
-                    r[currentInstr.rs] = 80;
-                    r[currentInstr.rst] = 80;
+                    currentInstr.rs = 80;
+                    currentInstr.rt = 80;
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
                         r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rt];
                     }
