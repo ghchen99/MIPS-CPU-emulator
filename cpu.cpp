@@ -69,18 +69,21 @@ void CPU::next(){
             //ADD
                 case 0x20:
                 {
-                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 0)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rs];
+                    currentInstr.rs = 80;
+                    currentInstr.rt = 80;
+                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
+                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rt];
                     }
-                    else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rs] >> 31) == 1)){
-                        r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rs] + 1;
+                    else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
+                        r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rt] + 1;
                     }
-                    else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rs] >> 31) == 1)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rs] + 2;
+                    else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
+                        r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rt] + 2;
                     }
                     else{
                         r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
                     }
+                    std::cout << r[currentInstr.rd] << std::endl;
                     break;
                 }
             
@@ -88,6 +91,9 @@ void CPU::next(){
                 case 0x21:
                 {
                     r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
+//                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1) && ((r[currentInstr.rd] >> 31) == 0)){
+//                         throw arithmeticException("Unsigned overflow");
+//                     }
                     break;
                 }
 
