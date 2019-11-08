@@ -102,8 +102,8 @@ void CPU::next(){
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInstr.rt]);
-                    lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInstr.rt]);
+                    //hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInstr.rt]);
+                    //lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInstr.rt]);
                 break;
                 }
 
@@ -113,8 +113,8 @@ void CPU::next(){
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    hi = sr[currentInstr.rs] % sr[currentInstr.rt];
-                    lo = sr[currentInstr.rs] / sr[currentInstr.rt];
+                    //hi = sr[currentInstr.rs] % sr[currentInstr.rt];
+                    //lo = sr[currentInstr.rs] / sr[currentInstr.rt];
                     break;
                 }
 
@@ -195,14 +195,14 @@ void CPU::next(){
             //SLT
                 case 0x2A:
                 {
-                    r[currentInstr.rd] = sr[currentInstr.rs] < sr[currentInstr.rt];
+                    //r[currentInstr.rd] = sr[currentInstr.rs] < sr[currentInstr.rt];
                     break;
                 }
             
             //SLTU
                 case 0x2B:
                 {
-                    r[currentInstr.rd] = r[currentInstr.rs] < sr[currentInstr.rt];
+                    //r[currentInstr.rd] = r[currentInstr.rs] < sr[currentInstr.rt];
                     break;
                 }
             
@@ -223,7 +223,7 @@ void CPU::next(){
             //SRA
                 case 0x03:
                 {
-                    sr[currentInstr.rd] = sr[currentInstr.rt] >> currentInstr.shamt;
+                    //sr[currentInstr.rd] = sr[currentInstr.rt] >> currentInstr.shamt;
                     break;
                 }
             
