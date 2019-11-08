@@ -42,6 +42,9 @@ void CPU::reset(){
 void CPU::next(){
     //getting next instruction
     currentInstr = nextInstr;
+    if(PC == 0){
+        throw endException;
+    }
     try{
         instruction nextInstr(loadInstruction(PC));
     }
@@ -101,8 +104,6 @@ void CPU::next(){
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    //hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInstr.rt]);
-                    //lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInstr.rt]);
                 break;
                 }
 
@@ -408,6 +409,35 @@ void CPU::next(){
     //do delayed instruction
     switch(delayInstr.opcode){
         //do instructions LB, LH, LW, LBU, LHU here (delayed instructions) and then clear delayInstr
+        //LB
+        case 0x20:
+            instructionFlag = 0b100;
+            newAddress = addressMap(delayInstr.address);
+            break;
+            
+        //LH
+        case 0x21:
+            instructionFlag = 0b100;
+            newAddress = addressMap(delayInstr.address);
+            break;
+            
+        //LW
+        case 0x22:
+            instructionFlag = 0b100;
+            newAddress = addressMap(delayInstr.address);
+            break;
+        
+        //LBU
+        case 0x24:
+            instructionFlag = 0b100;
+            newAddress = addressMap(delayInstr.address);
+            break;
+            
+        //LHU
+        case 0x25:
+            instructionFlag = 0b100;
+            newAddress = addressMap(delayInstr.address);
+            break;
     }
     
     
@@ -439,7 +469,6 @@ uint32_t CPU::addressMap(uint32_t location){
         if(instructionFlag && memoryFlags[0] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
-//do something
     }
     if(0x10000000 < location < 0x11000000){
         if(instructionFlag && memoryFlags[1] == 0b000){
@@ -457,13 +486,11 @@ uint32_t CPU::addressMap(uint32_t location){
         if(instructionFlag && memoryFlags[3] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
-//do something
     }
     if(0x3000004 < location < 0x3000008){
         if(instructionFlag && memoryFlags[4] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
-//do something
     }
     else{
         throw memoryException("Tried to access invalid memory address");
