@@ -469,31 +469,31 @@ void CPU::next(){
 
 uint32_t CPU::addressMap(uint32_t location){
 //check validity of address for read/write, alter the offsets, and give exceptions
-    if(0x0000000 < location < 0x4){
+    if((0x0000000 <= location) && (location <= 0x4)){
         if(instructionFlag && memoryFlags[0] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
 //do something
     }
-    if(0x10000000 < location < 0x11000000){
+    if((0x10000000 <= location) && (location <= 0x11000000)){
         if(instructionFlag && memoryFlags[1] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
         return location - 0x10000000;
     }
-    if(0x20000000 < location < 0x24000000){
+    if((0x20000000 <= location) && (location <= 0x24000000)){
         if(instructionFlag && memoryFlags[2] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
         return location - 0x20000000;
     }
-    if(0x3000000 < location < 0x3000004){
+    if((0x3000000 <= location) && (location <= 0x3000004)){
         if(instructionFlag && memoryFlags[3] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
 //do something
     }
-    if(0x3000004 < location < 0x3000008){
+    if((0x3000004 <= location) && (location <= 0x3000008)){
         if(instructionFlag && memoryFlags[4] == 0b000){
             throw memoryException("Tried to read/write/execute illegally");
         }
