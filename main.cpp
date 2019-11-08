@@ -22,12 +22,11 @@ int main(int argc, char *argv[]){
     if(c = sizeBin){
       break;
     }
-    }
     mipsCPU.loadRom(c, count);
     count++;
   }
 
-  int sizeBin = count;
+  sizeBin = count;
 
   return 0;
 }
