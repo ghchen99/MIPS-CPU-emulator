@@ -11,18 +11,21 @@ int main(int argc, char *argv[]){
 
   CPU mipsCPU;
   
+  binStream.seekg(0, binStream.end);
+  int sizeBin = binStream.tellg();
+  binStream.seekg(0, binStream.beg);
+  std::cout << sizeBin << '\n';
+  
   int count = 0;
   while(count < 0x1000000){
     char c;
     binStream.get(c);
-    /*if(c = NULL){
+    if(c = sizeBin){
       break;
-    }*/
+    }
     mipsCPU.loadRom(c, count);
     count++;
   }
-
-  int sizeBin = count;
 
   return 0;
 }
