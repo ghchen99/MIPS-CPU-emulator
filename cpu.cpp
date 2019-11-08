@@ -242,10 +242,10 @@ void CPU::next(){
                     r[currentInstr.rd] = r[currentInstr.rt] >> currentInstr.shamt;
                     if((r[currentInstr.rt] >> 31) == 1){
                         // sign extend 
-                        j = 31;
+                        int j = 31;
                         for(int i = 0; i < currentInstr.shamt; i++){
-                            uint32_t extend = 0;
-                            extend += pow(2, j);
+                            //uint32_t extend = 0;
+                            //extend += pow(2, j);
                             j--;
                         }
                     }
@@ -423,7 +423,7 @@ void CPU::next(){
     //J
     case 0x02:
     {
-        PC = (PC & 0xf0000000) | (currentInstr.addr << 2);
+        PC = (PC & 0xf0000000) | (currentInstr.address << 2);
     }
 
     
