@@ -17,6 +17,10 @@ CPU::CPU(){
     std::fill(r.begin(), r.end(), 0x00000000);
 }
 
+void CPU::loadRom(uint8_t c, int count){
+    rom[count] = c;
+}
+
 void CPU::run(){
 //call next until end or an exception is found
     try{
@@ -449,5 +453,4 @@ uint32_t CPU::loadInstruction(uint32_t memLocation){
     instructionFlag = 0b100;
     uint32_t mappedLocation = addressMap(memLocation);
     return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
-    
 }
