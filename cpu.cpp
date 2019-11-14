@@ -281,35 +281,35 @@ void CPU::next(){
     //MFC0
     case 0x10:
     {
-        std::cout << "MFC0" << '\n';
+        std::cerr << "MFC0" << '\n';
         break;
     }
     
     //SLTI
     case 0x0A:
     {
-        std::cout << "SLTI" << '\n';
+        std::cerr << "SLTI" << '\n';
         break;
     }
     
     //SLITU
     case 0x0B:
     {
-        std::cout << "SLITU" << '\n';
+        std::cerr << "SLITU" << '\n';
         break;
     }
     
     //ANDI
     case 0x0C:
     {
-        std::cout << "ANDI" << '\n';
+        std::cerr << "ANDI" << '\n';
         break;
     }
     
     //ORI
     case 0x0D:
     {
-        std::cout << "ORI" << '\n';
+        std::cerr << "ORI" << '\n';
         break;
     }
     
@@ -323,7 +323,7 @@ void CPU::next(){
     //SW
     case 0x2B:
     {
-        std::cout << "SW" << '\n';
+        std::cerr << "SW" << '\n';
         break;
     }
     
@@ -366,7 +366,8 @@ void CPU::next(){
     //ADDI
     case 0x08:
     {
-        
+        std::cerr << "ADDI" << '\n';
+        break;
     }
 
     
@@ -381,42 +382,48 @@ void CPU::next(){
     //LB
     case 0x20:
     {
-        
+        std::cerr << "LB" << '\n';
+        break;
     }
 
     
     //LW
     case 0x23:
     {
-        
+        std::cerr << "LW" << '\n';
+        break;
     }
 
     
     //LBU
     case 0x24:
     {
-        
+        std::cerr << "LBU" << '\n';
+        break;
     }
 
     
     //LHU
     case 0x25:
     {
-        
+        std::cerr << "LHU" << '\n';
+        break;
     }
 
     
     //SB
     case 0x28:
     {
-        
+        std::cerr << "SB" << '\n';
+        break;
     }
 
     
     //SH
     case 0x29:
     {
-        
+        std::cerr << "SH" << '\n';
+        break;
     }
 
     
