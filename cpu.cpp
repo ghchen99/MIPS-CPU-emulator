@@ -383,6 +383,9 @@ void CPU::next(){
     case 0x20:
     {
         std::cerr << "LB" << '\n';
+        instructionFlag = 0b100;
+        uint32_t mappedLocation = addressMap(memLocation);
+        return (rom[mappedLocation]);
         break;
     }
 
@@ -415,6 +418,10 @@ void CPU::next(){
     case 0x28:
     {
         std::cerr << "SB" << '\n';
+        std::cerr << "LB" << '\n';
+        instructionFlag = 0b100;
+        uint32_t mappedLocation = addressMap(memLocation);
+        ram[mappedLocation] = b; // think about that
         break;
     }
 
