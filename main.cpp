@@ -19,7 +19,7 @@ int main(int argc, char *argv[]){
   while(count < 0x1000000){
     char c;
     binStream.get(c);
-    if(c = sizeBin){
+    if(c == sizeBin){
       break;
     }
     mipsCPU.loadRom(c, count);
