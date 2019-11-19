@@ -27,6 +27,7 @@ int main(int argc, char *argv[]){
   }
 
   sizeBin = count;
-
+  
+  std::exit(mipsCPU.r[2]);
   return 0;
 }
