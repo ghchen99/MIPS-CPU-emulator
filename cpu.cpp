@@ -80,7 +80,6 @@ void CPU::next(){
                     else{
                         r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
                     }
-                    std::cout << r[currentInstr.rd] << std::endl;
                     break;
                 }
             
@@ -316,7 +315,7 @@ void CPU::next(){
     //LUI
     case 0x0F:
     {
-        std::cout << "LUI" << '\n';
+        std::cerr << "LUI" << '\n';
         break;
     }
     
@@ -382,11 +381,6 @@ void CPU::next(){
     //LB
     case 0x20:
     {
-        std::cerr << "LB" << '\n';
-        instructionFlag = 0b100;
-        uint32_t mappedLocation = addressMap(memLocation);
-        return (rom[mappedLocation]);
-        break;
     }
 
     
@@ -417,8 +411,6 @@ void CPU::next(){
     //SB
     case 0x28:
     {
-        std::cerr << "SB" << '\n';
-        std::cerr << "LB" << '\n';
         instructionFlag = 0b100;
         uint32_t mappedLocation = addressMap(memLocation);
         ram[mappedLocation] = b; // think about that
@@ -458,6 +450,23 @@ void CPU::next(){
     //do delayed instruction
     switch(delayInstr.opcode){
         //do instructions LB, LH, LW, LBU, LHU here (delayed instructions) and then clear delayInstr
+        case 0x20:
+        {
+            instructionFlag = 0b100;
+            uint32_t mappedLocation = addressMap(memLocation);
+            return (rom[mappedLocation]);
+            break;
+        }
+        //LW
+        case 0x23:
+        //LBU
+        case 0x24:
+        //LHU
+        case 0x25:
+        delayInstr.opcode = 0xFF; //cannot set int to NULL so setting delayInstr to a value that will never be in switch statement
+        default:
+            break;
+        
     }
     
     
@@ -468,6 +477,12 @@ void CPU::next(){
         //set instructions LB, LH, LW, LBU, LHU to delayInstr here (delayed instructions)
         //LB
         case 0x20:
+        {
+            instructionFlag = 0b100;
+            uint32_t mappedLocation = addressMap(memLocation);
+            return (rom[mappedLocation]);
+            break;
+        }
         //LW
         case 0x23:
         //LBU
