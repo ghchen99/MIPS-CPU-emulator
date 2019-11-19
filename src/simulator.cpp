@@ -28,6 +28,6 @@ int main(int argc, char *argv[]){
 
   sizeBin = count;
   
-  std::exit(mipsCPU.r[2]);
+  std::exit(mipsCPU.r[2] & 0xFF);
   return 0;
 }
