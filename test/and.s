@@ -1,0 +1,8 @@
+#exit code 8 
+
+addi $3, $0, 10
+addi $4, $0, 8
+
+and $2, $3, $4
+
+jr $0
