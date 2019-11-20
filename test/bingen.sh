@@ -9,3 +9,19 @@ do
 done
 
 echo -e "Finished.\n"
+
+
+
+
+
+
+#!/bin/bash
+
+FILES="text_files/*"
+
+for F in $FILES
+do
+    bin/parser $F "binaries/#"
+done
+
+echo -e "Finished.\n"
