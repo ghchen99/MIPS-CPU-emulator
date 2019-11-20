@@ -106,8 +106,8 @@ void CPU::next(){
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    //hi = static_cast<uint32_t>(sr[currentInstr.rs] % sr[currentInstr.rt]);
-                    //lo = static_cast<uint32_t>(sr[currentInstr.rs] / sr[currentInstr.rt]);
+                    hi = static_cast<uint32_t>(currentInstr.rs % currentInstr.rt);
+                    lo = static_cast<uint32_t>(currentInstr.rs / currentInstr.rt);
                 break;
                 }
 
@@ -120,6 +120,11 @@ void CPU::next(){
                     hi = r[currentInstr.rs] % r[currentInstr.rt];
                     lo = r[currentInstr.rs] / r[currentInstr.rt];
                     break;
+                }
+            //JALR
+                case 0x09:
+                {
+                    r[currentInstr.rd] = PC;
                 }
 
             //JR
@@ -250,6 +255,23 @@ void CPU::next(){
                     }
                     break;
                 }
+            //SRAV
+                case 0x07:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rt] >> r[currentInstr.rs];
+                    break;
+                }
+            //SLLV
+                case 0x04:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rt] << r[currentInstr.rs];
+                    break;
+                }
+            //SRLV
+                case 0x06:
+                {
+                    r[currentInstr.rd] = r[currentInstr.rt] >> r[currentInstr.rs];
+                }
             
             //SUB
                 case 0x22:
@@ -275,6 +297,8 @@ void CPU::next(){
                     r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
                     break;
                 }
+                default:
+                    throw instructionException("Invalid function code");
             }
         }
     //MFC0
@@ -287,42 +311,57 @@ void CPU::next(){
     //SLTI
     case 0x0A:
     {
-        std::cerr << "SLTI" << '\n';
+        r[currentInstr.rt] = r[currentInstr.rs] < currentInstr.imm; //signed
         break;
     }
     
     //SLITU
     case 0x0B:
     {
-        std::cerr << "SLITU" << '\n';
+        r[currentInstr.rt] = r[currentInstr.rs] < currentInstr.imm;
         break;
     }
     
     //ANDI
     case 0x0C:
     {
-        std::cerr << "ANDI" << '\n';
+        r[currentInstr.rt] = r[currentInstr.rs] & currentInstr.imm;
         break;
     }
     
     //ORI
     case 0x0D:
     {
-        std::cerr << "ORI" << '\n';
+        r[currentInstr.rt] = r[currentInstr.rs] | currentInstr.imm;
         break;
     }
     
+    //XORI
+    case 0x0E:
+    {
+        r[currentInstr.rt] = r[currentInstr.rs] ^ currentInstr.imm;
+        break;   
+    }
     //LUI
     case 0x0F:
     {
-        std::cerr << "LUI" << '\n';
+        r[currentInstr.rt] = currentInstr.imm << 16;
         break;
     }
     
     //SW
     case 0x2B:
     {
-        std::cerr << "SW" << '\n';
+        instructionFlag = 0b100;
+        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.imm);
+        uint8_t b0 = r[currentInstr.rt] & 0xff;
+        uint8_t b1 = (r[currentInstr.rt] >> 8) & 0xff;
+        uint8_t b2 = (r[currentInstr.rt] >> 16) & 0xff;
+        uint8_t b3 = r[currentInstr.rt] >> 24;
+        ram[mappedLocation] = b3;
+        ram[mappedLocation + 1] = b2;
+        ram[mappedLocation + 2] = b1;
+        ram[mappedLocation + 3] = b0;
         break;
     }
     
@@ -362,10 +401,45 @@ void CPU::next(){
         break;
     }
     
+    //BGEZ, BGEZAL, BLTZAL, BLTZ
+    case 0x01:
+        switch(currentInstr.rt){
+            //BGEZAL
+            case 0x11:
+            {
+                r[31] = PC;
+            }
+            //BGEZ
+            case 0x01:
+            {
+                if(currentInstr.rs >= 0){
+                    uint32_t offset = currentInstr.imm * 4;
+                    PC += offset - 4;
+                }
+                break;
+            }
+            //BLTZAL
+            case 0x10:
+            {
+                r[31] = PC;
+            }
+            //BLTZ
+            case 0x00:
+            {
+                if(currentInstr.rs < 0){
+                    uint32_t offset = currentInstr.imm * 4;
+                    PC += offset - 4;
+                }
+                break;
+            }
+            default:
+                throw instructionException("Invalid branch code");
+        }
+    
     //ADDI
     case 0x08:
     {
-        std::cerr << "ADDI" << '\n';
+        r[currentInstr.rt] = r[currentInstr.rs] + currentInstr.imm;
         break;
     }
 
@@ -381,21 +455,20 @@ void CPU::next(){
     //LB
     case 0x20:
     {
+        break;
     }
 
     
     //LW
     case 0x23:
     {
-        std::cerr << "LW" << '\n';
         break;
     }
 
     
     //LBU
     case 0x24:
-    {
-        std::cerr << "LBU" << '\n';
+    {;
         break;
     }
 
@@ -403,7 +476,6 @@ void CPU::next(){
     //LHU
     case 0x25:
     {
-        std::cerr << "LHU" << '\n';
         break;
     }
 
@@ -412,8 +484,9 @@ void CPU::next(){
     case 0x28:
     {
         instructionFlag = 0b100;
-        uint32_t mappedLocation = addressMap(memLocation);
-        ram[mappedLocation] = b; // think about that
+        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.imm);
+        uint8_t b0 = r[currentInstr.rt] & 0xff;
+        ram[mappedLocation] = b0;
         break;
     }
 
@@ -421,7 +494,12 @@ void CPU::next(){
     //SH
     case 0x29:
     {
-        std::cerr << "SH" << '\n';
+        instructionFlag = 0b100;
+        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.imm);
+        uint8_t b0 = r[currentInstr.rt] & 0xff;
+        uint8_t b1 = r[currentInstr.rt] >> 8;
+        ram[mappedLocation] = b1;
+        ram[mappedLocation + 1] = b0;
         break;
     }
 
@@ -439,34 +517,87 @@ void CPU::next(){
         r[31] = PC;
         break;
     }
-
-        
-        // Missing BGEZ, BGEZAL, BLEZAL, JALR, LH, LWL, LWR
-        // SLLV, SRAV, XORI
     
+    //LH
+    case 0x21:    
+    {
+        break;
+    }
+    
+    default:
+        throw instructionException("Invalid opcode");
     }
 
     
     //do delayed instruction
     switch(delayInstr.opcode){
         //do instructions LB, LH, LW, LBU, LHU here (delayed instructions) and then clear delayInstr
+        //LB
         case 0x20:
         {
             instructionFlag = 0b100;
-            uint32_t mappedLocation = addressMap(memLocation);
-            return (rom[mappedLocation]);
+            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t mappedLocation = addressMap(location);
+            if((0x20000000 <= location) && (location <= 0x24000000)){
+                currentInstr.rt = rom[mappedLocation];
+            }
+            else{
+                currentInstr.rt = ram[mappedLocation]; //sign extend this
+            }
+            delayInstr.opcode = 0xFF; //cannot set int to NULL so setting delayInstr to a value that will never be in switch statement
             break;
         }
         //LW
         case 0x23:
+        {
+            instructionFlag = 0b100;
+            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t mappedLocation = addressMap(location);
+            if((0x20000000 <= location) && (location <= 0x24000000)){
+                currentInstr.rt = (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
+            }
+            else{
+                currentInstr.rt = (ram[mappedLocation] << 24) || (ram[mappedLocation + 1] << 16) || (ram[mappedLocation + 2] << 8) || (ram[mappedLocation + 3]);
+            }
+            delayInstr.opcode = 0xFF;
+            break;
+            
+        }
         //LBU
         case 0x24:
+        {
+            instructionFlag = 0b100;
+            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t mappedLocation = addressMap(location);
+            if((0x20000000 <= location) && (location <= 0x24000000)){
+                currentInstr.rt = rom[mappedLocation];
+            }
+            else{
+                currentInstr.rt = ram[mappedLocation]; //no sign extension
+            }
+            delayInstr.opcode = 0xFF;
+            break;
+        }
+        //LH
+        case 0x21:
+            break;
         //LHU
         case 0x25:
-        delayInstr.opcode = 0xFF; //cannot set int to NULL so setting delayInstr to a value that will never be in switch statement
+        {
+            instructionFlag = 0b100;
+            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t mappedLocation = addressMap(location);
+            if((0x20000000 <= location) && (location <= 0x24000000)){
+                currentInstr.rt = (rom[mappedLocation] << 8) || rom[mappedLocation + 1];
+            }
+            else{
+                currentInstr.rt = (ram[mappedLocation] << 8) || ram[mappedLocation + 1]; //no sign extension
+            }
+            delayInstr.opcode = 0xFF;
+            break;
+        }
         default:
             break;
-        
     }
     
     
@@ -477,16 +608,12 @@ void CPU::next(){
         //set instructions LB, LH, LW, LBU, LHU to delayInstr here (delayed instructions)
         //LB
         case 0x20:
-        {
-            instructionFlag = 0b100;
-            uint32_t mappedLocation = addressMap(memLocation);
-            return (rom[mappedLocation]);
-            break;
-        }
         //LW
         case 0x23:
         //LBU
         case 0x24:
+        //LH
+        case 0x21:
         //LHU
         case 0x25:
         delayInstr = currentInstr;
