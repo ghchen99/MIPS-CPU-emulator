@@ -28,7 +28,9 @@ void CPU::run(){
             this->next();
         }
     }
-    catch(endException&){
+    catch(endException& e){
+        std::cerr << "unexpected termination: ";
+        std::cerr << e.what() << std::endl;
     }
         
 }
@@ -42,14 +44,19 @@ void CPU::reset(){
 void CPU::next(){
     //getting next instruction
     currentInstr = nextInstr;
+    if(PC & 0x03 != 0){
+        throw endException(); //misaligned PC
+    }
     try{
         instruction nextInstr(loadInstruction(PC));
     }
-    catch(memoryException){
-        //something
+    catch(memoryException& e){
+        std::cerr << "memory exception: ";
+        std::cerr << e.what() << std::endl;
     }
-    catch(instructionException){
-        //something
+    catch(instructionException& e){
+        std::cerr << "instruction exception ";
+        std::cerr << e.what() << std::endl;
     }
     
     PC += 4;
@@ -66,16 +73,16 @@ void CPU::next(){
             //ADD
                 case 0x20:
                 {
-                    currentInstr.rs = 80;
-                    currentInstr.rt = 80;
+                    //currentInstr.rs = 80;
+                    //currentInstr.rt = 80;
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 + r[currentInstr.rt];
+                        r[currentInstr.rd] = -(~r[currentInstr.rs]) + 1 + r[currentInstr.rt];
                     }
                     else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rt] + 1;
+                        r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rt] + 1);
                     }
                     else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] + ~r[currentInstr.rt] + 2;
+                        r[currentInstr.rd] = -(~r[currentInstr.rs] + 1) - (~r[currentInstr.rt] + 1);
                     }
                     else{
                         r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
@@ -87,10 +94,10 @@ void CPU::next(){
                 case 0x21:
                 {
                     r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
-//                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1) && ((r[currentInstr.rd] >> 31) == 0)){
-//                         throw arithmeticException("Unsigned overflow");
-//                     }
-                    break;
+                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1) && ((r[currentInstr.rd] >> 31) == 0)){
+                         throw arithmeticException("Unsigned overflow");
+                     }
+                     break;
                 }
 
             //AND
@@ -106,8 +113,8 @@ void CPU::next(){
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    hi = static_cast<uint32_t>(currentInstr.rs % currentInstr.rt);
-                    lo = static_cast<uint32_t>(currentInstr.rs / currentInstr.rt);
+                    hi = static_cast<uint32_t>(r[currentInstr.rs] % r[currentInstr.rt]);
+                    lo = static_cast<uint32_t>(r[currentInstr.rs] / r[currentInstr.rt]);
                 break;
                 }
 
@@ -165,9 +172,9 @@ void CPU::next(){
             //MULT
                 case 0x18:
                 {
-                    uint64_t product = r[currentInstr.rs] * r[currentInstr.rt];
-                    hi = static_cast<uint64_t> (product >> 32);
-                    lo = static_cast<uint64_t> (product & 0xffffffff);
+                    int64_t product = r[currentInstr.rs] * r[currentInstr.rt];
+                    hi = static_cast<uint32_t> (product >> 32);
+                    lo = static_cast<uint32_t> (product & 0xffffffff);
                     break;
                 }
 
@@ -243,22 +250,15 @@ void CPU::next(){
             //SRA
                 case 0x03:
                 {
-                    r[currentInstr.rd] = r[currentInstr.rt] >> currentInstr.shamt;
-                    if((r[currentInstr.rt] >> 31) == 1){
-                        // sign extend 
-                        int j = 31;
-                        for(int i = 0; i < currentInstr.shamt; i++){
-                            //uint32_t extend = 0;
-                            //extend += pow(2, j);
-                            j--;
-                        }
-                    }
+                    uint32_t myNum = r[currentInstr.rt] >> currentInstr.shamt;
+                    r[currentInstr.rd] = shiftExtender(myNum);                      
                     break;
                 }
             //SRAV
                 case 0x07:
                 {
-                    r[currentInstr.rd] = r[currentInstr.rt] >> r[currentInstr.rs];
+                    uint32_t myNum = r[currentInstr.rt] >> r[currentInstr.rs];
+                    r[currentInstr.rd] = shiftExtender(myNum); 
                     break;
                 }
             //SLLV
@@ -277,13 +277,13 @@ void CPU::next(){
                 case 0x22:
                 {
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 - r[currentInstr.rt];
+                        r[currentInstr.rd] = -(~r[currentInstr.rs] + 1) - r[currentInstr.rt];
                     }
                     else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rt] + 1);
+                        r[currentInstr.rd] = r[currentInstr.rs] + ~r[currentInstr.rt] + 1;
                     }
                     else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] - ~r[currentInstr.rt];
+                        r[currentInstr.rd] = -(~r[currentInstr.rs]) + ~r[currentInstr.rt];
                     }
                     else{
                         r[currentInstr.rd] = r[currentInstr.rs] - r[currentInstr.rt];
@@ -301,12 +301,6 @@ void CPU::next(){
                     throw instructionException("Invalid function code");
             }
         }
-    //MFC0
-    case 0x10:
-    {
-        std::cerr << "MFC0" << '\n';
-        break;
-    }
     
     //SLTI
     case 0x0A:
@@ -538,6 +532,12 @@ void CPU::next(){
             instructionFlag = 0b100;
             uint32_t location = currentInstr.rs + currentInstr.imm;
             uint32_t mappedLocation = addressMap(location);
+            if((0x3000000 <= location) && (location <= 0x3000004)){
+                char myInput;
+                std::cin >> myInput;
+                uint32_t extendedInput = signExtender(myInput);
+                r[currentInstr.rt] = extendedInput;
+            }
             if((0x20000000 <= location) && (location <= 0x24000000)){
                 currentInstr.rt = rom[mappedLocation];
             }
@@ -580,7 +580,19 @@ void CPU::next(){
         }
         //LH
         case 0x21:
+        {
+            instructionFlag = 0b100;
+            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t mappedLocation = addressMap(location);
+            if((0x20000000 <= location) && (location <= 0x24000000)){
+                currentInstr.rt = (rom[mappedLocation] << 8) || rom[mappedLocation + 1];
+            }
+            else{
+                currentInstr.rt = (ram[mappedLocation] << 8) || ram[mappedLocation + 1]; //no sign extension
+            }
+            delayInstr.opcode = 0xFF;
             break;
+        }
         //LHU
         case 0x25:
         {
@@ -664,4 +676,24 @@ uint32_t CPU::loadInstruction(uint32_t memLocation){
     instructionFlag = 0b100;
     uint32_t mappedLocation = addressMap(memLocation);
     return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
+}
+
+uint32_t CPU::signExtender(uint8_t myNum){
+    uint32_t newNum;
+    if(myNum & 0x80){
+        newNum = myNum | 0xffffff00;
+    }
+    else{
+        newNum = myNum | 0x00000000;
+    }
+    return newNum;
+}
+
+uint32_t CPU::shiftExtender(uint32_t myNum){
+    if((r[currentInstr.rt] >> 31) == 1){
+        for(int i = 0, j = 31; i < currentInstr.shamt; i++, j--){
+            myNum = myNum | (1 << j);
+        }
+    }
+    return myNum;
 }

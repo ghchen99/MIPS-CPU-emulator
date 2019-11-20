@@ -56,6 +56,8 @@ class CPU{
         void next();
         uint32_t addressMap(uint32_t location);
         uint32_t loadInstruction(uint32_t memLocation);
+        uint32_t signExtender(uint8_t myNum);
+        uint32_t shiftExtender(uint32_t myNum);
 };
 
 
