@@ -256,7 +256,12 @@ void CPU::next(){
                 case 0x03:
                 {
                     uint32_t myNum = r[currentInstr.rt] >> currentInstr.shamt;
-                    r[currentInstr.rd] = shiftExtender(myNum);                      
+                    if((r[currentInstr.rt] >> 31) == 1){
+                        for(int i = 0, j = 31; i < currentInstr.shamt; i++, j--){
+                            myNum = myNum | (1 << j);
+                        }
+                    }
+                    r[currentInstr.rd] = myNum;                    
                     break;
                 }
             //SRAV
@@ -264,6 +269,11 @@ void CPU::next(){
                 {
                     uint32_t myNum = r[currentInstr.rt] >> r[currentInstr.rs];
                     r[currentInstr.rd] = shiftExtender(myNum); 
+                    if((r[currentInstr.rt] >> 31) == 1){
+                        for(int i = 0, j = 31; i < currentInstr.rs; i++, j--){
+                            myNum = myNum | (1 << j);
+                        }
+                    }
                     break;
                 }
             //SLLV
@@ -748,15 +758,6 @@ uint32_t CPU::signExtender(uint16_t myNum){
         newNum = myNum | 0x00000000;
     }
     return newNum;
-}
-
-uint32_t CPU::shiftExtender(uint32_t myNum){
-    if((r[currentInstr.rt] >> 31) == 1){
-        for(int i = 0, j = 31; i < currentInstr.shamt; i++, j--){
-            myNum = myNum | (1 << j);
-        }
-    }
-    return myNum;
 }
 
 int CPU::signReg(int myRegister){
