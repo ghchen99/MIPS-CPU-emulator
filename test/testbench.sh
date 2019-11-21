@@ -4,7 +4,7 @@ output="test/output.csv"
 
 run()
 {
-    metafile="${file%.*}.meta"
+    metafile="${$1%.*}.meta"
     if [ -f "metafile" ]; then
         metadata=()
         while read -r line  || [[ -n "$line" ]]; do
