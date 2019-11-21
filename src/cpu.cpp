@@ -23,15 +23,15 @@ void CPU::loadRom(uint8_t c, int count){
 
 void CPU::run(){
 //call next until end or an exception is found
-    try{
-        for(int i = 0; i < /*bin.size()*/ 0x1000000; i+= 32){
+    //try{
+        for(int i = 0; i < /*bin.size()*/ 0x1000000; i+= 4){
             this->next();
         }
-    }
-    catch(endException& e){
+    //}
+    /*catch(endException& e){
         std::cerr << "unexpected termination: ";
         std::cerr << e.what() << std::endl;
-    }
+    }*/
         
 }
 void CPU::reset(){
@@ -45,19 +45,20 @@ void CPU::next(){
     //getting next instruction
     currentInstr = nextInstr;
     if(PC & 0x03 != 0){
-        throw endException(); //misaligned PC
+        //throw endException(); //misaligned PC
+        std::exit(-11);
     }
-    try{
+    //try{
         instruction nextInstr(loadInstruction(PC));
-    }
-    catch(memoryException& e){
+    //}
+    /*catch(memoryException& e){
         std::cerr << "memory exception: ";
         std::cerr << e.what() << std::endl;
     }
     catch(instructionException& e){
         std::cerr << "instruction exception ";
         std::cerr << e.what() << std::endl;
-    }
+    }*/
     
     PC += 4;
         
@@ -77,7 +78,8 @@ void CPU::next(){
                     sum = signReg(currentInstr.rs) + signReg(currentInstr.rt);
                     
                     if(sum ){
-                        throw arithmeticException("signed overflow");
+                        //throw arithmeticException("signed overflow");
+                        std::exit(-10);
                     }
                     else{
                         r[currentInstr.rd] = sum & 0xffffffff;
@@ -90,7 +92,8 @@ void CPU::next(){
                 {
                     r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
                      if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1) && ((r[currentInstr.rd] >> 31) == 0)){
-                         throw arithmeticException("Unsigned overflow");
+                         //throw arithmeticException("Unsigned overflow");
+                         std::exit(-10);
                      }
                      break;
                 }
@@ -107,14 +110,15 @@ void CPU::next(){
                 {
                     
                     if(currentInstr.rt == 0){
-                        throw arithmeticException("Tried to divide by 0");
+                        //throw arithmeticException("Tried to divide by 0");
+                        std::exit(-10);
                     }
                     if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 0)){
                         hi = r[currentInstr.rs] % r[currentInstr.rt];
                         lo = r[currentInstr.rs] / r[currentInstr.rt];
                     }
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        uint64_t division = ~((~r[currentInstr.rs] + 1) / r[currentInstr.rt]) + 1;
+                        uint64_t division = signReg(currentInstr.rs) / r[currentInstr.rt] + 1;
                         hi = (division >> 32) & 0xffffffff;
                         lo = division & 0xffffffff;
                     }
@@ -134,7 +138,8 @@ void CPU::next(){
                 case 0x1B:
                 {
                     if(currentInstr.rt == 0){
-                        throw arithmeticException("Tried to divide by 0");
+                        //throw arithmeticException("Tried to divide by 0");
+                        std::exit(-10);
                     }
                     hi = r[currentInstr.rs] % r[currentInstr.rt];
                     lo = r[currentInstr.rs] / r[currentInstr.rt];
@@ -310,7 +315,8 @@ void CPU::next(){
                     break;
                 }
                 default:
-                    throw instructionException("Invalid function code");
+                    //throw instructionException("Invalid function code");
+                    std::exit(-12);
             }
         }
     
@@ -374,7 +380,8 @@ void CPU::next(){
     case 0x2B:
     {
         if(r[currentInstr.rs] + currentInstr.simm << 30 != 0){
-            throw memoryException("Address error, misaligned address");
+            //throw memoryException("Address error, misaligned address");
+            std::exit(-11);
         }
         instructionFlag = 0b100;
         uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.simm);
@@ -457,7 +464,8 @@ void CPU::next(){
                 break;
             }
             default:
-                throw instructionException("Invalid branch code");
+                //throw instructionException("Invalid branch code");
+                std::exit(-12);
         }
     
     //ADDI overflow error add here
@@ -554,7 +562,8 @@ void CPU::next(){
     }
     
     default:
-        throw instructionException("Invalid opcode");
+        //throw instructionException("Invalid opcode");
+        std::exit(-12);
     }
 
     
@@ -681,42 +690,47 @@ void CPU::next(){
         
     }
 }
-}
 
 uint32_t CPU::addressMap(uint32_t location){
 //check validity of address for read/write, alter the offsets, and give exceptions
     if((0x0000000 <= location) && (location <= 0x4)){
         if(instructionFlag && memoryFlags[0] == 0b000){
-            throw memoryException("Tried to read/write/execute illegally");
+            //throw memoryException("Tried to read/write/execute illegally");
+            std::exit(-12);
         }
 //do something
     }
     if((0x10000000 <= location) && (location <= 0x11000000)){
         if(instructionFlag && memoryFlags[1] == 0b000){
-            throw memoryException("Tried to read/write/execute illegally");
+            //throw memoryException("Tried to read/write/execute illegally");
+            std::exit(-12);
         }
         return location - 0x10000000;
     }
     if((0x20000000 <= location) && (location <= 0x24000000)){
         if(instructionFlag && memoryFlags[2] == 0b000){
-            throw memoryException("Tried to read/write/execute illegally");
+            //throw memoryException("Tried to read/write/execute illegally");
+            std::exit(-12);
         }
         return location - 0x20000000;
     }
     if((0x3000000 <= location) && (location <= 0x3000004)){
         if(instructionFlag && memoryFlags[3] == 0b000){
-            throw memoryException("Tried to read/write/execute illegally");
+            //throw memoryException("Tried to read/write/execute illegally");
+            std::exit(-12);
         }
 //do something
     }
     if((0x3000004 <= location) && (location <= 0x3000008)){
         if(instructionFlag && memoryFlags[4] == 0b000){
-            throw memoryException("Tried to read/write/execute illegally");
+            //throw memoryException("Tried to read/write/execute illegally");
+            std::exit(-12);
         }
 //do something
     }
     else{
-        throw memoryException("Tried to access invalid memory address");
+        //throw memoryException("Tried to access invalid memory address");
+        std::exit(-12);
     }
 }
 
@@ -759,7 +773,7 @@ uint32_t CPU::shiftExtender(uint32_t myNum){
 
 int CPU::signReg(int myRegister){
     if(r[myRegister] >> 31){
-        uint32_t signedConvert = ~(r[myRegister]) + 1;
+        int signedConvert = ~(r[myRegister]) + 1;
         return -signedConvert;
     }
     else{

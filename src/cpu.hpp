@@ -8,7 +8,7 @@
 
 #include "instruction.hpp"
 
-struct memoryException : public std::exception{
+/*struct memoryException : public std::exception{
     memoryException(const char *msg) : message(msg) {}
     const char *what() const noexcept{ 
         return this->message; 
@@ -30,9 +30,9 @@ struct instructionException : public std::exception{
         return this->message; 
     }
     const char *message;
-};
+};*/
 
-class endException : public std::exception {};
+//class endException : public std::exception {};
 
 class CPU{
     private:
