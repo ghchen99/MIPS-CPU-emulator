@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILES="text_files/*"
+FILES="textfiles/*"
 
 for F in $FILES
 do
