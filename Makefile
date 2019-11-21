@@ -1,17 +1,21 @@
-all: instruction.o cpu.o main.o 
-	g++ instruction.o cpu.o main.o -o prog
+all: simulator
+
+simulator: bin/simulator
+
+bin/simulator: bin/instruction.o bin/cpu.o bin/simulator.o
+	g++ $^ -o ./bin/mips_simulator
 	
-instruction.o: instruction.cpp instruction.hpp
-	g++ -c instruction.cpp
+bin/instruction.o: src/instruction.cpp src/instruction.hpp
+	g++ -c src/instruction.cpp -o bin/instruction.o
 
 	
-cpu.o: cpu.cpp cpu.hpp instruction.hpp
-	g++ -c cpu.cpp
+bin/cpu.o: src/cpu.cpp src/cpu.hpp src/instruction.hpp
+	g++ -c src/cpu.cpp -o bin/cpu.o
 
-main.o: main.cpp
-	g++ -c main.cpp
+bin/simulator.o: src/simulator.cpp
+	g++ -c src/simulator.cpp - o bin/simulator.o
 
 run:
-	./prog
+	./simulator
 
-clean: rm *.o prog
+clean: rm *.o simulator

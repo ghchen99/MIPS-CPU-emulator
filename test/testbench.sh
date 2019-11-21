@@ -1,15 +1,34 @@
-bin/simulator testcase/addu.bin
-RETCODE=$?
+#!/bin/bash
 
-if [[ "$RETCODE" == "9" ]] ;
-        echo "Success" ;
-else
-        echo "Failure" ;
+output="test/output.csv"
+
+run()
+{
+    if [ -f "test/testcase" ];
+        metadata=()
+        while read line ; do
+            metadata
         
-bin/simulator testcase/subu.bin
-RETCODE=$?
+        Instruction=metadata[0]
+        Expectedreturn=metadata[1]
+        Author=metadata[2]
+        
+        bin/mips_simulator $1
+        
+        RETCODE=$?
+        if [[ "$RETCODE" == Expectedreturn" ]] ;
+                Status="pass"
+        else
+                Status="fail"
+        fi
+        outputmessage="$TestId, $Instruction, $Status, $Author"
+     else
+     fi
 
-if [[ "$RETCODE" == "6" ]] ;
-        echo "Success" ;
-else
-        echo "Failure" ;
+}
+
+binfiles="./tests/*.bin"
+for file in binfiles
+do
+    run file
+done
