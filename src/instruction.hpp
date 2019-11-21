@@ -12,6 +12,7 @@ struct instruction{
     int funct;
     int imm;
     int address;
+    int32_t simm;
     instruction();
     instruction(uint32_t encodedInstruction);    
 };

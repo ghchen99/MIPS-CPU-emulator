@@ -11,6 +11,7 @@ instruction::instruction(){
     this -> shamt = 0;
     this -> funct = 0;
     this -> imm = 0;
+    this -> simm = 0;
     this -> address = 0;
 }
 
@@ -25,6 +26,7 @@ instruction::instruction(uint32_t encodedInstruction){
         this -> shamt = (encodedInstruction >> 6) & 0x1f;
         this -> funct = encodedInstruction & 0x3f;
         this -> imm = 0;
+        this -> simm = 0;
         this -> address = 0;
     }
     else if(this -> opcode == 2 || this -> opcode == 3){
@@ -34,6 +36,7 @@ instruction::instruction(uint32_t encodedInstruction){
         this -> shamt = 0;
         this -> funct = 0;
         this -> imm = 0;
+        this -> simm = 0;
         this -> address = encodedInstruction & 0x3ffffff;
     }
     else{
@@ -43,6 +46,12 @@ instruction::instruction(uint32_t encodedInstruction){
         this -> shamt = 0;
         this -> funct = 0;
         this -> imm = encodedInstruction & 0xffff;
+        if(encodedInstruction & 0x8000){
+            this -> simm = (encodedInstruction & 0xffff) || 0xffff0000;
+        }
+        else{
+            this -> simm = (encodedInstruction & 0xffff) || 0x00000000;
+        }
         this -> address = 0;
     }
 }

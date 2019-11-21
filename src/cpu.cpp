@@ -70,23 +70,29 @@ void CPU::next(){
         {
             switch (currentInstr.funct) {
                 
-            //ADD
+            //ADD add signed overflow.............
                 case 0x20:
                 {
-                    //currentInstr.rs = 80;
-                    //currentInstr.rt = 80;
+                    int sum;
                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        r[currentInstr.rd] = -(~r[currentInstr.rs]) + 1 + r[currentInstr.rt];
+                        sum = r[currentInstr.rd] = -(~r[currentInstr.rs]) + 1 + r[currentInstr.rt];
+                        
                     }
                     else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = r[currentInstr.rs] - (~r[currentInstr.rt] + 1);
+                        sum = r[currentInstr.rs] - (~r[currentInstr.rt] + 1);
                     }
                     else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = -(~r[currentInstr.rs] + 1) - (~r[currentInstr.rt] + 1);
+                        sum = -(~r[currentInstr.rs] + 1) - (~r[currentInstr.rt] + 1);
                     }
                     else{
-                        r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
+                        sum = r[currentInstr.rs] + r[currentInstr.rt];
                     }
+                    
+                    if(sum ){
+                        throw arithmeticException("signed overflow");
+                    }
+                    else{
+                        r[currentInstr.rd] = sum & 0xffffffff;
                     break;
                 }
             
@@ -110,11 +116,28 @@ void CPU::next(){
             //DIV
                 case 0x1A:
                 {
+                    
                     if(currentInstr.rt == 0){
                         throw arithmeticException("Tried to divide by 0");
                     }
-                    hi = static_cast<uint32_t>(r[currentInstr.rs] % r[currentInstr.rt]);
-                    lo = static_cast<uint32_t>(r[currentInstr.rs] / r[currentInstr.rt]);
+                    if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 0)){
+                        hi = r[currentInstr.rs] % r[currentInstr.rt];
+                        lo = r[currentInstr.rs] / r[currentInstr.rt];
+                    }
+                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
+                        uint64_t division = ~((~r[currentInstr.rs] + 1) / r[currentInstr.rt]) + 1;
+                        hi = (division >> 32) & 0xffffffff;
+                        lo = division & 0xffffffff;
+                    }
+                    if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
+                        uint64_t division = ~(r[currentInstr.rs] / (~r[currentInstr.rt] + 1)) + 1;
+                        hi = (division >> 32) & 0xffffffff;
+                        lo = division & 0xffffffff;
+                    }
+                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
+                        hi = (~r[currentInstr.rs] + 1) % (~r[currentInstr.rt] + 1);
+                        lo = (~r[currentInstr.rs] + 1) / (~r[currentInstr.rt] + 1);
+                    }
                 break;
                 }
 
@@ -169,7 +192,7 @@ void CPU::next(){
                     break;
                 }
 
-            //MULT
+            //MULT - do i need to add cases for signed/unsigned?
                 case 0x18:
                 {
                     int64_t product = r[currentInstr.rs] * r[currentInstr.rt];
@@ -305,21 +328,36 @@ void CPU::next(){
     //SLTI
     case 0x0A:
     {
-        r[currentInstr.rt] = r[currentInstr.rs] < currentInstr.imm; //signed
+        if(r[currentInstr.rs] & 0x80000000 == 0){
+            if(r[currentInstr.rs] < currentInstr.simm){
+                r[currentInstr.rt] = 1;
+            }
+            else{
+              r[currentInstr.rt] = 0;
+            }
+        }
+        else{
+            if(r[currentInstr.rs] < currentInstr.simm){
+                r[currentInstr.rt] = 1;
+            }
+            else{
+              
+            }
+        }
         break;
     }
     
     //SLITU
     case 0x0B:
     {
-        r[currentInstr.rt] = r[currentInstr.rs] < currentInstr.imm;
+        r[currentInstr.rt] = r[currentInstr.rs] < currentInstr.simm;
         break;
     }
     
     //ANDI
     case 0x0C:
     {
-        r[currentInstr.rt] = r[currentInstr.rs] & currentInstr.imm;
+        r[currentInstr.rt] = r[currentInstr.rs] & currentInstr.simm;
         break;
     }
     
@@ -346,8 +384,11 @@ void CPU::next(){
     //SW
     case 0x2B:
     {
+        if(r[currentInstr.rs] + currentInstr.simm << 30 != 0){
+            throw memoryException("Address error, misaligned address");
+        }
         instructionFlag = 0b100;
-        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.imm);
+        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.simm);
         uint8_t b0 = r[currentInstr.rt] & 0xff;
         uint8_t b1 = (r[currentInstr.rt] >> 8) & 0xff;
         uint8_t b2 = (r[currentInstr.rt] >> 16) & 0xff;
@@ -430,10 +471,12 @@ void CPU::next(){
                 throw instructionException("Invalid branch code");
         }
     
-    //ADDI
+    //ADDI overflow error add here
+    
     case 0x08:
     {
-        r[currentInstr.rt] = r[currentInstr.rs] + currentInstr.imm;
+        uint64_t sum;
+        sum = r[currentInstr.rs] + currentInstr.simm;
         break;
     }
 
@@ -441,7 +484,7 @@ void CPU::next(){
     //ADDIU
     case 0x09:
     {
-        r[currentInstr.rt] = r[currentInstr.rs] + currentInstr.imm;
+        r[currentInstr.rt] = r[currentInstr.rs] + currentInstr.simm;
         break;
     }
 
@@ -478,7 +521,7 @@ void CPU::next(){
     case 0x28:
     {
         instructionFlag = 0b100;
-        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.imm);
+        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.simm);
         uint8_t b0 = r[currentInstr.rt] & 0xff;
         ram[mappedLocation] = b0;
         break;
@@ -488,8 +531,11 @@ void CPU::next(){
     //SH
     case 0x29:
     {
+        if(r[currentInstr.rs] + currentInstr.simm){
+
+        }
         instructionFlag = 0b100;
-        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.imm);
+        uint32_t mappedLocation = addressMap(r[currentInstr.rs] + currentInstr.simm);
         uint8_t b0 = r[currentInstr.rt] & 0xff;
         uint8_t b1 = r[currentInstr.rt] >> 8;
         ram[mappedLocation] = b1;
@@ -530,12 +576,12 @@ void CPU::next(){
         case 0x20:
         {
             instructionFlag = 0b100;
-            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t location = currentInstr.rs + currentInstr.simm;
             uint32_t mappedLocation = addressMap(location);
             if((0x3000000 <= location) && (location <= 0x3000004)){
                 char myInput;
                 std::cin >> myInput;
-                uint32_t extendedInput = signExtender(myInput);
+                uint32_t extendedInput = signExtender(static_cast<uint8_t> (myInput));
                 r[currentInstr.rt] = extendedInput;
             }
             if((0x20000000 <= location) && (location <= 0x24000000)){
@@ -551,13 +597,19 @@ void CPU::next(){
         case 0x23:
         {
             instructionFlag = 0b100;
-            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t location = currentInstr.rs + currentInstr.simm;
             uint32_t mappedLocation = addressMap(location);
+            if((0x3000000 <= location) && (location <= 0x3000004)){
+                char myInput;
+                std::cin >> myInput;
+                uint32_t extendedInput = signExtender(static_cast<uint8_t> (myInput));
+                r[currentInstr.rt] = extendedInput;
+            }
             if((0x20000000 <= location) && (location <= 0x24000000)){
-                currentInstr.rt = (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
+                currentInstr.rt = (rom[mappedLocation] << 24) | (rom[mappedLocation + 1] << 16) | (rom[mappedLocation + 2] << 8) | (rom[mappedLocation + 3]);
             }
             else{
-                currentInstr.rt = (ram[mappedLocation] << 24) || (ram[mappedLocation + 1] << 16) || (ram[mappedLocation + 2] << 8) || (ram[mappedLocation + 3]);
+                currentInstr.rt = (ram[mappedLocation] << 24) | (ram[mappedLocation + 1] << 16) | (ram[mappedLocation + 2] << 8) | (ram[mappedLocation + 3]);
             }
             delayInstr.opcode = 0xFF;
             break;
@@ -567,8 +619,14 @@ void CPU::next(){
         case 0x24:
         {
             instructionFlag = 0b100;
-            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t location = currentInstr.rs + currentInstr.simm;
             uint32_t mappedLocation = addressMap(location);
+            if((0x3000000 <= location) && (location <= 0x3000004)){
+                char myInput;
+                std::cin >> myInput;
+                uint32_t extendedInput = signExtender(static_cast<uint8_t> (myInput));
+                r[currentInstr.rt] = extendedInput;
+            }
             if((0x20000000 <= location) && (location <= 0x24000000)){
                 currentInstr.rt = rom[mappedLocation];
             }
@@ -582,13 +640,13 @@ void CPU::next(){
         case 0x21:
         {
             instructionFlag = 0b100;
-            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t location = currentInstr.rs + currentInstr.simm;
             uint32_t mappedLocation = addressMap(location);
             if((0x20000000 <= location) && (location <= 0x24000000)){
-                currentInstr.rt = (rom[mappedLocation] << 8) || rom[mappedLocation + 1];
+                currentInstr.rt = (rom[mappedLocation] << 8) | rom[mappedLocation + 1];
             }
             else{
-                currentInstr.rt = (ram[mappedLocation] << 8) || ram[mappedLocation + 1]; //no sign extension
+                currentInstr.rt = (ram[mappedLocation] << 8) | ram[mappedLocation + 1]; //no sign extension
             }
             delayInstr.opcode = 0xFF;
             break;
@@ -597,13 +655,13 @@ void CPU::next(){
         case 0x25:
         {
             instructionFlag = 0b100;
-            uint32_t location = currentInstr.rs + currentInstr.imm;
+            uint32_t location = currentInstr.rs + currentInstr.simm;
             uint32_t mappedLocation = addressMap(location);
             if((0x20000000 <= location) && (location <= 0x24000000)){
-                currentInstr.rt = (rom[mappedLocation] << 8) || rom[mappedLocation + 1];
+                currentInstr.rt = (rom[mappedLocation] << 8) | rom[mappedLocation + 1];
             }
             else{
-                currentInstr.rt = (ram[mappedLocation] << 8) || ram[mappedLocation + 1]; //no sign extension
+                currentInstr.rt = (ram[mappedLocation] << 8) | ram[mappedLocation + 1]; //no sign extension
             }
             delayInstr.opcode = 0xFF;
             break;
@@ -633,6 +691,7 @@ void CPU::next(){
             break;
         
     }
+}
 }
 
 uint32_t CPU::addressMap(uint32_t location){
@@ -675,13 +734,24 @@ uint32_t CPU::addressMap(uint32_t location){
 uint32_t CPU::loadInstruction(uint32_t memLocation){
     instructionFlag = 0b100;
     uint32_t mappedLocation = addressMap(memLocation);
-    return (rom[mappedLocation] << 24) || (rom[mappedLocation + 1] << 16) || (rom[mappedLocation + 2] << 8) || (rom[mappedLocation + 3]);
+    return (rom[mappedLocation] << 24) | (rom[mappedLocation + 1] << 16) | (rom[mappedLocation + 2] << 8) | (rom[mappedLocation + 3]);
 }
 
 uint32_t CPU::signExtender(uint8_t myNum){
     uint32_t newNum;
     if(myNum & 0x80){
         newNum = myNum | 0xffffff00;
+    }
+    else{
+        newNum = myNum | 0x00000000;
+    }
+    return newNum;
+}
+
+uint32_t CPU::signExtender(uint16_t myNum){
+    uint32_t newNum;
+    if(myNum & 0x80){
+        newNum = myNum | 0xffff0000;
     }
     else{
         newNum = myNum | 0x00000000;
