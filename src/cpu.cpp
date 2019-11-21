@@ -136,7 +136,7 @@ void CPU::next(){
             //JALR
                 case 0x09:
                 {
-                    r[currentInstr.rd] = PC;
+                    r[currentInstr.rd] = PC + 4;
                 }
 
             //JR
@@ -216,18 +216,7 @@ void CPU::next(){
             //SLT
                 case 0x2A:
                 {
-                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] + 1 < r[currentInstr.rt];
-                    }
-                    else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = r[currentInstr.rs] < - (~r[currentInstr.rt] + 1);
-                    }
-                    else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
-                        r[currentInstr.rd] = ~r[currentInstr.rs] < ~r[currentInstr.rt];
-                    }
-                    else{
-                        r[currentInstr.rd] = r[currentInstr.rs] < r[currentInstr.rt];
-                    }
+                        r[currentInstr.rd] = signReg(currentInstr.rs) < signReg(currentInstr.rt);
                     break;
                 }
             
@@ -321,22 +310,7 @@ void CPU::next(){
     //SLTI
     case 0x0A:
     {
-        if(r[currentInstr.rs] & 0x80000000 == 0){
-            if(r[currentInstr.rs] < currentInstr.simm){
-                r[currentInstr.rt] = 1;
-            }
-            else{
-              r[currentInstr.rt] = 0;
-            }
-        }
-        else{
-            if(r[currentInstr.rs] < currentInstr.simm){
-                r[currentInstr.rt] = 1;
-            }
-            else{
-              
-            }
-        }
+        r[currentInstr.rt] = signReg(currentInstr.rs) < currentInstr.simm;
         break;
     }
     
@@ -717,14 +691,12 @@ uint32_t CPU::addressMap(uint32_t location){
             //throw memoryException("Tried to read/write/execute illegally");
             std::exit(-12);
         }
-//do something
     }
     if((0x3000004 <= location) && (location <= 0x3000008)){
         if(instructionFlag && memoryFlags[4] == 0b000){
             //throw memoryException("Tried to read/write/execute illegally");
             std::exit(-12);
         }
-//do something
     }
     else{
         //throw memoryException("Tried to access invalid memory address");
