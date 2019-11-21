@@ -4,24 +4,24 @@ output="test/output.csv"
 
 run()
 {
-    if [ -f "tests/testcases" ];
+    if [ -f "test/testcase" ];
         metadata=()
         while read line ; do
             metadata
         
-        testinstruction=metadata[0]
-        expectedreturn=metadata[1]
-        author=metadata[2]
+        Instruction=metadata[0]
+        Expectedreturn=metadata[1]
+        Author=metadata[2]
         
         bin/simulator $1
         
         RETCODE=$?
-        if [[ "$RETCODE" == expectedreturn" ]] ;
-                result="pass"
+        if [[ "$RETCODE" == Expectedreturn" ]] ;
+                Status="pass"
         else
-                result="fail"
+                Status="fail"
         fi
-        outputmessage="$testid, $testinstruction, 
+        outputmessage="$TestId, $Instruction, $Status, $Author"
      else
      fi
 
@@ -32,6 +32,3 @@ for file in binfiles
 do
     run file
 done
-
-bin/simulator tests/addu.bin
-metadata()
