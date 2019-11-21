@@ -1,4 +1,7 @@
-bin/simulator testcase/addu.bin
+output="test/output.csv"
+
+
+bin/simulator tests/addu.bin
 RETCODE=$?
 
 if [[ "$RETCODE" == "9" ]] ;
