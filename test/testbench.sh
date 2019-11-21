@@ -13,7 +13,7 @@ run()
         Expectedreturn=metadata[1]
         Author=metadata[2]
         
-        bin/simulator $1
+        bin/mips_simulator $1
         
         RETCODE=$?
         if [[ "$RETCODE" == Expectedreturn" ]] ;
