@@ -33,4 +33,5 @@ do
     run file
 done
 
-#bin/simulator tests/addu.bin
+bin/simulator tests/addu.bin
+metadata()
