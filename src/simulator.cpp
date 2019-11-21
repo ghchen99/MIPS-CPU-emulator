@@ -3,31 +3,32 @@
 #include <iostream>
 #include "cpu.hpp"
 #include "instruction.hpp"
+
 int main(int argc, char *argv[]){
-  std::string binName = argv[1];
-  std::cerr << binName; //Cerr for testing, cout actual result
-  std::ifstream binStream(argv[1], std::ios::binary);
+    std::string binName = argv[1];
+    std::cerr << binName; //Cerr for testing, cout actual result
+    std::ifstream binStream(argv[1], std::ios::binary);
 
-  CPU mipsCPU;
+    CPU mipsCPU;
 
-  binStream.seekg(0, binStream.end);
-  int sizeBin = binStream.tellg();
-  binStream.seekg(0, binStream.beg);
-  std::cout << sizeBin << '\n';
+    binStream.seekg(0, binStream.end);
+    int sizeBin = binStream.tellg();
+    binStream.seekg(0, binStream.beg);
+    std::cout << sizeBin << '\n';
 
-  int count = 0;
-  while(count < 0x1000000){
-    char c;
-    binStream.get(c);
-    if(c == sizeBin){
-      break;
+    int count = 0;
+    while(count < 0x1000000){
+        char c;
+        binStream.get(c);
+        if(c == sizeBin){
+        break;
+        }
+        mipsCPU.loadRom(c, count);
+        count++;
     }
-    mipsCPU.loadRom(c, count);
-    count++;
-  }
 
-  sizeBin = count;
-  
-  std::exit(mipsCPU.r[2] & 0xFF);
-  return 0;
+    sizeBin = count;
+    
+    std::exit(mipsCPU.getReg(2) & 0xFF);
+    return 0;
 }

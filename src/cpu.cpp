@@ -770,3 +770,6 @@ int CPU::signReg(int myRegister){
     }
 }
     
+uint32_t CPU::getReg(int regNum){
+    return r[regNum];
+}
