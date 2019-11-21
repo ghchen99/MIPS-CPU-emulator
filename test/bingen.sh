@@ -1,10 +1,9 @@
 #!/bin/bash 
 
-srcPath="tests"
-metaFiles="./$srcPath/*.meta"
-for meta in $metaFiles
+metafiles="./tests/*.meta"
+for meta in $metafiles
 do
-    ./parser/bin/parser "$meta" "$srcPath/#"
+    ./parser/bin/parser $meta "tests/#"
 done
 
 echo -e "Finished.\n"
