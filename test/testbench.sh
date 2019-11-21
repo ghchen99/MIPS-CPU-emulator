@@ -4,21 +4,26 @@ output="test/output.csv"
 
 run()
 {
-    if [ -f "tests/testcases" ]
-        #metadata=()
-        #while read
+    if [ -f "tests/testcases" ];
+        metadata=()
+        while read line ; do
+            metadata
         
-        #testinstruction=metadata[0]
-        #expectedreturn=metadata[1]
-        #author=metadata[2]
+        testinstruction=metadata[0]
+        expectedreturn=metadata[1]
+        author=metadata[2]
         
         bin/simulator $1
         
         RETCODE=$?
         if [[ "$RETCODE" == expectedreturn" ]] ;
-                echo "You pass" ;
+                result="pass"
         else
-                echo "You fail" ;
+                result="fail"
+        fi
+        outputmessage="$testid, $testinstruction, 
+     else
+     fi
 
 }
 
