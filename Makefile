@@ -15,3 +15,17 @@ run:
 	./prog
 
 clean: rm *.o prog
+
+
+
+
+simulator: ./bin/simulator
+
+parser:
+	make -C ./parser
+	
+testbench: parser
+	mdkir -p ./bin
+	mkdi -p ./tests
+	cp ./test/testbench.sh ./tests
+	cp ./test/tests
