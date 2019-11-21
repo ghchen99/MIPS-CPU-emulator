@@ -13,7 +13,7 @@ bin/cpu.o: src/cpu.cpp src/cpu.hpp src/instruction.hpp
 	g++ -c src/cpu.cpp -o bin/cpu.o
 
 bin/simulator.o: src/simulator.cpp
-	g++ -c src/simulator.cpp - o bin/simulator.o
+	g++ -c src/simulator.cpp -o bin/simulator.o
 
 run:
 	./simulator
