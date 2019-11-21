@@ -174,10 +174,10 @@ void CPU::next(){
                     break;
                 }
 
-            //MULT - do i need to add cases for signed/unsigned?
+            //MULT
                 case 0x18:
                 {
-                    int64_t product = r[currentInstr.rs] * r[currentInstr.rt];
+                    int64_t product = signReg(currentInstr.rs) * signReg(currentInstr.rt);
                     hi = static_cast<uint32_t> (product >> 32);
                     lo = static_cast<uint32_t> (product & 0xffffffff);
                     break;

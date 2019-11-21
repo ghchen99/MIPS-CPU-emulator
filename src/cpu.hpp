@@ -60,6 +60,7 @@ class CPU{
         uint32_t signExtender(uint16_t myNum);
         uint32_t shiftExtender(uint32_t myNum);
         int signReg(int myRegister);
+        void getReg;
 };
 
 
