@@ -12,14 +12,14 @@ run()
         expectedreturn=metadata[1]
         author=metadata[2]
         
+        bin/simulator tests/.bin
+        
         RETCODE=$?
         if [[ "$RETCODE" == expectedreturn" ]] ;
-                echo "Yeet" ;
+                echo "You pass" ;
         else
-                echo "Neet" ;
+                echo "You fail" ;
         
-}
-
 bin/simulator tests/addu.bin
 RETCODE=$?
 
