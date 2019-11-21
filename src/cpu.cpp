@@ -74,10 +74,12 @@ void CPU::next(){
             //ADD
                 case 0x20:
                 {
-                    int sum;
-                    sum = signReg(currentInstr.rs) + signReg(currentInstr.rt);
+                    int sum, LHS, RHS;
+                    LHS = signReg(currentInstr.rs);
+                    RHS = signReg(currentInstr.rt);
                     
-                    if(sum ){
+                    if(((LHS >= 0 && RHS >= 0) && (0x7FFFFFFF - LHS <= RHS))
+                        || ((LHS < 0 && RHS < 0) && (LHS <= 0x80000000 - RHS))){
                         //throw arithmeticException("signed overflow");
                         std::exit(-10);
                     }
@@ -90,8 +92,9 @@ void CPU::next(){
             //ADDU
                 case 0x21:
                 {
-                    r[currentInstr.rd] = r[currentInstr.rs] + r[currentInstr.rt];
-                     if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1) && ((r[currentInstr.rd] >> 31) == 0)){
+                    uint64_t sum;
+                     sum = r[currentInstr.rs] + r[currentInstr.rt];
+                     if(sum >> 32 >= 0){
                          //throw arithmeticException("Unsigned overflow");
                          std::exit(-10);
                      }
@@ -105,7 +108,7 @@ void CPU::next(){
                     break;
                 }
 
-            //DIV
+            //DIV - NEEDS FINISHING
                 case 0x1A:
                 {
                     
@@ -113,23 +116,8 @@ void CPU::next(){
                         //throw arithmeticException("Tried to divide by 0");
                         std::exit(-10);
                     }
-                    if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 0)){
-                        hi = r[currentInstr.rs] % r[currentInstr.rt];
-                        lo = r[currentInstr.rs] / r[currentInstr.rt];
-                    }
-                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        uint64_t division = signReg(currentInstr.rs) / r[currentInstr.rt] + 1;
-                        hi = (division >> 32) & 0xffffffff;
-                        lo = division & 0xffffffff;
-                    }
-                    if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
-                        uint64_t division = ~(r[currentInstr.rs] / (~r[currentInstr.rt] + 1)) + 1;
-                        hi = (division >> 32) & 0xffffffff;
-                        lo = division & 0xffffffff;
-                    }
-                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
-                        hi = (~r[currentInstr.rs] + 1) % (~r[currentInstr.rt] + 1);
-                        lo = (~r[currentInstr.rs] + 1) / (~r[currentInstr.rt] + 1);
+                        hi = static_cast<uint32_t> (signReg(currentInstr.rs) % signReg(currentInstr.rt));
+                        lo = static_cast<uint32_t> (signReg(currentInstr.rs) / signReg(currentInstr.rt));
                     }
                 break;
                 }
