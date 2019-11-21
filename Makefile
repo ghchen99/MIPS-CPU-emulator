@@ -1,3 +1,7 @@
+simulator   prog
+	mkdir -p bin
+	cp $< bin/mips_simulator
+
 all: instruction.o cpu.o main.o 
 	g++ instruction.o cpu.o main.o -o prog
 	
@@ -15,17 +19,3 @@ run:
 	./prog
 
 clean: rm *.o prog
-
-
-
-
-simulator: ./bin/simulator
-
-parser:
-	make -C ./parser
-	
-testbench: parser
-	mdkir -p ./bin
-	mkdi -p ./tests
-	cp ./test/testbench.sh ./tests
-	cp ./test/tests
