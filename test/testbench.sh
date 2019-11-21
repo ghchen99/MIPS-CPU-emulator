@@ -4,10 +4,12 @@ output="test/output.csv"
 
 run()
 {
-    if [ -f "test/testcase" ];
+    metafile="${file%.*}.meta"
+    if [ -f "metafile" ]; then
         metadata=()
-        while read line ; do
-            metadata
+        while read -r line  || [[ -n "$line" ]]; do
+            metaData+=("${line//#}")
+        done < "$metafile"
         
         Instruction=metadata[0]
         Expectedreturn=metadata[1]
@@ -22,13 +24,12 @@ run()
                 Status="fail"
         fi
         outputmessage="$TestId, $Instruction, $Status, $Author"
-     else
      fi
 
 }
 
-binfiles="./tests/*.bin"
+binfiles="./test/binaries/*.bin"
 for file in binfiles
 do
-    run file
+    run $file
 done
