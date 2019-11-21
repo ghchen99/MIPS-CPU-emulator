@@ -70,29 +70,18 @@ void CPU::next(){
         {
             switch (currentInstr.funct) {
                 
-            //ADD add signed overflow.............
+            //ADD
                 case 0x20:
                 {
                     int sum;
-                    if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 0)){
-                        sum = r[currentInstr.rd] = -(~r[currentInstr.rs]) + 1 + r[currentInstr.rt];
-                        
-                    }
-                    else if(((r[currentInstr.rs] >> 31) == 0) && ((r[currentInstr.rt] >> 31) == 1)){
-                        sum = r[currentInstr.rs] - (~r[currentInstr.rt] + 1);
-                    }
-                    else if(((r[currentInstr.rs] >> 31) == 1) && ((r[currentInstr.rt] >> 31) == 1)){
-                        sum = -(~r[currentInstr.rs] + 1) - (~r[currentInstr.rt] + 1);
-                    }
-                    else{
-                        sum = r[currentInstr.rs] + r[currentInstr.rt];
-                    }
+                    sum = signReg(currentInstr.rs) + signReg(currentInstr.rt);
                     
                     if(sum ){
                         throw arithmeticException("signed overflow");
                     }
                     else{
                         r[currentInstr.rd] = sum & 0xffffffff;
+                    }
                     break;
                 }
             
@@ -767,3 +756,14 @@ uint32_t CPU::shiftExtender(uint32_t myNum){
     }
     return myNum;
 }
+
+int CPU::signReg(int myRegister){
+    if(r[myRegister] >> 31){
+        uint32_t signedConvert = ~(r[myRegister]) + 1;
+        return -signedConvert;
+    }
+    else{
+        return r[myRegister];
+    }
+}
+    
