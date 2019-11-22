@@ -118,7 +118,6 @@ void CPU::next(){
                     }
                         hi = static_cast<uint32_t> (signReg(currentInstr.rs) % signReg(currentInstr.rt));
                         lo = static_cast<uint32_t> (signReg(currentInstr.rs) / signReg(currentInstr.rt));
-                    }
                 break;
                 }
 
@@ -257,12 +256,12 @@ void CPU::next(){
                 case 0x07:
                 {
                     uint32_t myNum = r[currentInstr.rt] >> r[currentInstr.rs];
-                    r[currentInstr.rd] = shiftExtender(myNum); 
                     if((r[currentInstr.rt] >> 31) == 1){
                         for(int i = 0, j = 31; i < currentInstr.rs; i++, j--){
                             myNum = myNum | (1 << j);
                         }
                     }
+                    r[currentInstr.rd] = myNum; 
                     break;
                 }
             //SLLV
