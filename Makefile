@@ -20,12 +20,13 @@ run:
 	
 parser:
 	make -C ./test/parser
+	chmod u+x ./test/parser/bin/parser
 
 testbench: parser
 	mkdir -p ./bin
 	cp testbench ./bin/mips_testbench
-	chmod u+x ./bin/mips_testbench
-	chmod u+x ./test/bingen.sh #./test/testcases/*.meta
+	./bin/mips_testbench
+	./test/bingen.sh
 	
 
 #run_tests: simulator testbench
