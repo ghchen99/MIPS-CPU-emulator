@@ -1,10 +1,13 @@
 #!/bin/bash
 
 output="test/output.csv"
+testId=0
 
 run()
 {
-    metafile="${file%.*}.meta"
+    #metafile="${$1%.*}.meta"
+    filename=$(basename -- "$1")
+    metafile="${filename%.*}.meta"
     if [ -f "metafile" ]; then
         metadata=()
         while read -r line  || [[ -n "$line" ]]; do
