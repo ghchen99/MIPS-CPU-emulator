@@ -1,0 +1,10 @@
+#add
+#-2
+#ghc18
+
+addi $3, $0, 0xFFFFFFFF
+addi $4, $0, 0xFFFFFFFF
+
+add $2, $3, $4
+
+jr $0
