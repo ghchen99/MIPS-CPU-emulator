@@ -1,0 +1,12 @@
+#bltzal
+#5
+#ghc18
+
+addi $2, $0, 3
+bltzal $2, func
+addi $2, $2, 1
+addi $2, $2, 1
+jr $0
+
+func: addi, $2, $2, 8
+jr $31
