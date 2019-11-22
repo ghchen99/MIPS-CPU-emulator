@@ -30,8 +30,7 @@ testbench: parser
 	./test/bingen.sh
 	
 
-#run_tests: simulator testbench
-#	clear
-#	./bin/mips_testbench ./bin/mips_simulator
+run_tests: simulator testbench
+	bin/mips_testbench bin/mips_simulator
 
 clean: rm *.o simulator
