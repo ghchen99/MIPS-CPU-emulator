@@ -2,8 +2,8 @@
 #-2
 #ghc18
 
-addi $3, $0, 0xFFFFFFFF
-addi $4, $0, 0xFFFFFFFF
+addi $3, $0, -1
+addi $4, $0, -1
 
 add $2, $3, $4
 
