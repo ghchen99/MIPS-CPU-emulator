@@ -2,7 +2,6 @@
 
 output="test/output.csv"
 outputmessage="TestId, Instruction, Status, Author, Message\n"
-TestId="testId"
 binfiles="./test/binaries/*.bin"
 
 
@@ -18,8 +17,8 @@ do
            count+=1
        done < "$metafile"
        
+       TestId=$filename
        Instruction=${metadata[0]}
-       TestId=$Instruction
        Expectedreturn=${metadata[1]}
        Author=${metadata[2]}
     
