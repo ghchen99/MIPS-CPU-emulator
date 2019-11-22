@@ -50,7 +50,7 @@ class CPU{
         
     public:
         CPU();
-        void loadRom(uint8_t c, int count);
+        void loadRom(char c, int count);
         void run();
         void reset();
         void next();
