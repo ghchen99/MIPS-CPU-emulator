@@ -9,6 +9,8 @@ cd test
 
 chmod u+x bingen.sh
 
+sh bingen.sh
+
 cd ..
 
 sh testbench.sh
