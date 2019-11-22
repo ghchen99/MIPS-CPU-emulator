@@ -1,8 +1,9 @@
 #bgez
-#8
+#16
 #ghc18
 
 addi $2, $0, 8
 bgez $0 end
 addi $2, $2, 8
+addi $2, $2, 1
 end: jr $0
