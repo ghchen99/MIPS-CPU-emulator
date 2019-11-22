@@ -7,7 +7,6 @@
 
 int main(int argc, char *argv[]){
     std::string binName = argv[1];
-    std::cerr << binName; //Cerr for testing, cout actual result
     std::ifstream binStream(argv[1], std::ios::binary);
 
     CPU mipsCPU;
@@ -15,7 +14,6 @@ int main(int argc, char *argv[]){
     binStream.seekg(0, binStream.end);
     int sizeBin = binStream.tellg();
     binStream.seekg(0, binStream.beg);
-    //std::cout << sizeBin << '\n';
 
     char* buffer = new char[0x1000000];
     binStream.read(buffer, sizeBin);
