@@ -15,6 +15,8 @@ struct instruction{
     int32_t simm;
     instruction();
     instruction(uint32_t encodedInstruction);    
+    
+    void decode(uint32_t encodedInstruction);
 };
 
 #endif

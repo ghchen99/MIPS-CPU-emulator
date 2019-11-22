@@ -1,4 +1,5 @@
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include "cpu.hpp"
@@ -14,9 +15,15 @@ int main(int argc, char *argv[]){
     binStream.seekg(0, binStream.end);
     int sizeBin = binStream.tellg();
     binStream.seekg(0, binStream.beg);
-    std::cout << sizeBin << '\n';
+    //std::cout << sizeBin << '\n';
 
-    int count = 0;
+    char* buffer = new char[0x1000000];
+    binStream.read(buffer, sizeBin);
+    
+    for(int i = 0; i < sizeBin; i++){
+        mipsCPU.loadRom(buffer[i], i);
+    }
+    /*int count = 0;
     while(count < 0x1000000){
         char c;
         binStream.get(c);
@@ -25,10 +32,11 @@ int main(int argc, char *argv[]){
         }
         mipsCPU.loadRom(c, count);
         count++;
-    }
-
-    sizeBin = count;
+    }*/
     
-    std::exit(mipsCPU.getReg(2) & 0xFF);
+    mipsCPU.run();
+    
+    //sizeBin = count;
+    std::cerr << "i am here" << std::endl;
     return 0;
 }
