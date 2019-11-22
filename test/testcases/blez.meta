@@ -1,0 +1,9 @@
+#blez
+#7
+#ghc18
+
+addi $2, $0, 3
+blez $2 end
+addi $2, $2, 2
+addi $2, $2, 2
+end: jr $0
