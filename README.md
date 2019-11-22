@@ -5,7 +5,7 @@ make simulator
 
 cd test
 
-chmod u+x ./parser/bin/parser
+chmod u+x ./parser/bin/parser or make parser?
 
 sh bingen.sh
 
