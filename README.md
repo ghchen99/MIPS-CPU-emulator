@@ -12,4 +12,4 @@ make testbench
 bin/mips_testbench bin/mips_simulator (or make run_tests)
 </pre>
 
-The "test" folder contains the output.csv file
+The output.csv file will be created in the "test" folder
