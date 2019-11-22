@@ -34,7 +34,6 @@ do
        fi
        Message="expected $Expectedreturn and obtained $RETCODE"
        outputmessage+="$TestId, $Instruction, $Status, $Author, $Message\n"
-       echo $outputmessage
     fi
 done
 
