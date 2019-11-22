@@ -29,7 +29,6 @@ testbench: parser
 	chmod u+x ./test/bingen.sh
 	./test/bingen.sh
 	
-
 run_tests: simulator testbench
 	bin/mips_testbench bin/mips_simulator
 
