@@ -1,4 +1,5 @@
-THIS IS NOT OUR WORK
+THIS IS NOT OUR WORK - https://github.com/EthanSK/MIPS_Simulator/tree/master/test/mips-parser
+======================
 
 MIPS Binary Instruction File Generator
 ===================================
