@@ -1,0 +1,8 @@
+#addiu
+#0
+#ghc18
+
+addiu $3, $0, -1
+addiu $2, $3, -1
+
+jr $0

@@ -1,0 +1,12 @@
+#jal
+#7
+#ghc18
+
+addi $2, $0, 2
+jal function
+addi $2, $2, 2
+addi $2, $2, 2
+jr $0
+
+function: addi $2, $2, 1
+jr $31

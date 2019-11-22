@@ -1,0 +1,9 @@
+#mflo
+#8
+#ghc18
+
+addi $4, $0, 8
+mtlo $4
+mflo $2
+
+jr $0

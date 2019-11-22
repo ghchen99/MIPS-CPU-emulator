@@ -1,0 +1,10 @@
+#mult
+#27
+#ghc18
+
+addi $4, $0, 9
+addi $3, $0, 3
+mult $4, $3
+mflo $2
+
+jr $0

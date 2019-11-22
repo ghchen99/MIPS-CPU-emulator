@@ -1,9 +1,9 @@
 #!/bin/bash 
 
-metafiles="./testcases/*.meta"
+metafiles="./test/testcases/*.meta"
 for meta in $metafiles
 do
-    ./parser/bin/parser $meta "binaries/#"
+    ./test/parser/bin/parser $meta "test/binaries/#"
 done
 
-echo -e "Finished.\n"
+echo -e "Binaries created.\n"

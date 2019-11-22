@@ -1,0 +1,9 @@
+#div
+#0
+#ghc18
+
+addi $4, $0, 0
+addi $3, $0, 2
+div $4, $3
+mflo $2
+jr $0

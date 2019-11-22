@@ -1,0 +1,11 @@
+#j
+#6
+#ghc18
+
+addi $2, $0, 2
+j function
+addi $2, $2, 2
+addi $2, $2, 2
+
+func: addi $2, $2, 2
+jr $0

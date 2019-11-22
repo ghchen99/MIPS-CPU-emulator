@@ -1,8 +1,0 @@
-addi $3, $0, 21
-addi $4, $0, 7
-
-div $3, $4
-mflo $2
-
-jr $0
-nop

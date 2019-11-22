@@ -1,0 +1,8 @@
+#sltiu
+#0
+#ghc18
+
+addi $3, $0, 8
+sltiu $2, $3, 7
+
+jr $0

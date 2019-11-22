@@ -1,0 +1,9 @@
+#bgtz
+#5
+#ghc18
+
+addi $2, $0, 4
+bgtz $2 end
+addi $2, $2, 1
+addi $2, $2, 1
+end: jr $0

@@ -18,18 +18,18 @@ bin/simulator.o: src/simulator.cpp
 run:
 	./simulator
 	
-#parser:
-#	make -c ./test/parser
+parser:
+	make -C ./test/parser
+	chmod u+x ./test/parser/bin/parser
 
-#testbench: parser
-#	mkdir -p ./bin
-#	mkdir -p $(TST_DIR)
-#	cp ./test/testbench.sh ./bin/mips_testbench testbench.dh or mips_testbench?
-#	cp -r ./test/testcases/*.meta ./test
-#	./test/bingen.sh $./testcases
-
-#run_tests: simulator testbench
-#	clear
-#	./bin/mips_testbench ./bin/mips_simulator
+testbench: parser
+	mkdir -p ./bin
+	cp testbench ./bin/mips_testbench
+	chmod u+x ./bin/mips_testbench
+	chmod u+x ./test/bingen.sh
+	./test/bingen.sh
+	
+run_tests: simulator testbench
+	bin/mips_testbench bin/mips_simulator
 
 clean: rm *.o simulator
