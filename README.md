@@ -3,9 +3,9 @@ This work was done as part of coursework
 
 make simulator
 
-cd test
-
 make parser
+
+cd test
 
 sh bingen.sh
 
