@@ -19,7 +19,7 @@ run:
 	./simulator
 	
 parser:
-	make -c ./test/parser
+	make -C ./test/parser
 
 #testbench: parser
 #	mkdir -p ./bin
