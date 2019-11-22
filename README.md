@@ -5,14 +5,27 @@ The following commands specify how to run the testbench:
 <pre>
 make simulator
 </pre>
+
+<pre>
 make parser
+</pre>
 
+<pre>
 chmod u+x ./parser/bin/parser
+</pre>
 
+<pre>
 cd test
+</pre>
 
+<pre>
 sh bingen.sh
+</pre>
 
+<pre>
 cd ..
+</pre>
 
+<pre>
 sh testbench.sh
+</pre>
