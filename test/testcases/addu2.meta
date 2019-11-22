@@ -2,7 +2,7 @@
 #0
 #ghc18
 
-addi $4, $0, 0xFFFFFFFF
-addi $3, $0, 0xFFFFFFFF
+addi $4, $0, -1
+addi $3, $0, -1
 addu $2, $3, $4
 jr $0
