@@ -1,0 +1,9 @@
+#mfhi
+#6
+#ghc18
+
+addi $3, $0, 6
+mthi $3
+mfhi $2
+
+jr $0
