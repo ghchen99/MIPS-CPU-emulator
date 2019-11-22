@@ -1,0 +1,10 @@
+#beq
+#6
+#ghc18
+
+addi $2, $0, 2
+addi $3, $0, 3 
+beq $3, $3 end
+addi $2, $2, 4
+addi $2, $2, 4
+end: jr $0
