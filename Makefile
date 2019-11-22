@@ -21,12 +21,10 @@ run:
 parser:
 	make -C ./test/parser
 
-#testbench: parser
-#	mkdir -p ./bin
-#	mkdir -p $(TST_DIR)
-#	cp ./test/testbench.sh ./bin/mips_testbench testbench.dh or mips_testbench?
-#	cp -r ./test/testcases/*.meta ./test
-#	./test/bingen.sh $./testcases
+testbench: parser
+	mkdir -p ./bin
+	cp testbench ./bin/mips_testbench
+	./test/bingen
 
 #run_tests: simulator testbench
 #	clear
