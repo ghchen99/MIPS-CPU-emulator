@@ -1,0 +1,13 @@
+#bgezal
+#12
+#ghc18
+
+addi $2, $0, 7
+sub $4, $0, $2
+bgezal $4 func
+addi $2, $2, 4
+addi $2, $2, 1
+jr $0
+
+func: addi $2, $2, 2
+jr $31
