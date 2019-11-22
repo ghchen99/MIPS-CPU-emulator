@@ -9,5 +9,5 @@ make simulator
 make testbench
 </pre>
 <pre>
-bin/mips_testbench bin/mips_simulator
+bin/mips_testbench bin/mips_simulator (or make run_tests)
 </pre>
