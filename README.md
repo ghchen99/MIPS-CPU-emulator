@@ -3,7 +3,7 @@ This work was done as part of coursework
 
 make simulator
 
-cd tests
+cd test
 
 sh bingen.sh
 
