@@ -18,8 +18,8 @@ bin/simulator.o: src/simulator.cpp
 run:
 	./simulator
 	
-#parser:
-#	make -c ./test/parser
+parser:
+	make -c ./test/parser
 
 #testbench: parser
 #	mkdir -p ./bin
