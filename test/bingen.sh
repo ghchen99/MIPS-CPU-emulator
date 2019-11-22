@@ -6,4 +6,4 @@ do
     ./test/parser/bin/parser $meta "test/binaries/#"
 done
 
-echo -e "Finished.\n"
+echo -e "Binaries created.\n"
