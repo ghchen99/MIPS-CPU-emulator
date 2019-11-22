@@ -7,7 +7,7 @@ make parser
 
 cd test
 
-sh bingen.sh
+chmod u+x bingen.sh
 
 cd ..
 
