@@ -1,0 +1,10 @@
+#bne 
+#7
+#ghc18
+
+addi $2, $0, 5
+addi $3, $2, 1
+bne $2, $3 end
+addi $2, $2, 1
+addi $2, $2, 1
+end: jr $0
